@@ -1,0 +1,11 @@
+﻿@model Demo.Models.Student
+
+<h2>Delete Student</h2>
+
+<h4>Are you sure you want to delete the student "@Model.Name"?</h4>
+
+<form method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    <a href="@Url.Action("Index", "Students")" class="btn btn-secondary">Cancel</a>
+</form>

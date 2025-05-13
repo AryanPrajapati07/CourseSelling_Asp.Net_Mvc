@@ -1,0 +1,50 @@
+﻿@model List<Student>
+@{
+}
+
+<h2 class="text-center mb-5">List of Students</h2>
+
+<div class="row mb-5">
+	<div class="col">
+		<a class="btn btn-primary" asp-controller="Students" asp-action="Create">New Student</a>
+	</div>
+	<div class="col"></div>
+</div>
+
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>Id</th>
+			<th>Name</th>
+			<th>Email</th>
+			<th>Gender</th>
+			<th>Date</th>
+
+			<th>Image</th>
+
+			<th>Action</th>
+
+		</tr>
+	</thead>
+
+	<tbody>
+		@foreach (var student in Model)
+		{
+			<tr>
+				<td>@student.Id</td>
+				<td>@student.Name</td>
+				<td>@student.Email</td>
+				<td>@student.Gender</td>
+				<td>@student.Dob.ToString("MM/dd/yyyy")</td>
+				<td><img src="@student.ImageFileName" alt="Student Image" width="50" height="50" /></td>
+
+				<td style="white-space:nowrap">
+					<a class="btn btn-primary btn-sm" asp-controller="Students" asp-action="Edit" asp-route-id="@student.Id">Edit</a>
+					<a class="btn btn-primary btn-sm" asp-controller="Students" asp-action="Delete" asp-route-id="@student.Id">Delete</a>
+				</td>
+
+			</tr>
+		}
+	</tbody>
+</table>
