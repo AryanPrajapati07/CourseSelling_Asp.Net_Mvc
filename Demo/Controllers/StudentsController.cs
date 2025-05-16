@@ -16,6 +16,14 @@ namespace Demo.Controllers
             this.context = context;
             //this.emailService = emailService;
         }
+
+        //add dashboard page 
+        public IActionResult AddCourse()
+        {
+            return View();
+        }
+
+
         public IActionResult Index(String searchString)
         {
 
@@ -253,9 +261,27 @@ namespace Demo.Controllers
                 return View();
             }
 
-            return RedirectToAction(nameof(Index));
+            TempData["StudentEmail"] = student.Email;
+
+            return RedirectToAction(nameof(StudentHome));
         }
 
+        //student home page
+        public IActionResult StudentHome()
+        {
+            var email = TempData["StudentEmail"] as string;
+            if(string.IsNullOrEmpty(email))
+            {
+                return RedirectToAction(nameof(StudentLogin));
+            }
+
+            var student = context.Students.FirstOrDefault(s => s.Email == email);
+            if(student == null)
+            {
+                return NotFound();
+            }
+            return View(student);
+        }
 
 
     }

@@ -205,9 +205,17 @@
             <div class="form-group">
                 <label for="Password">Password</label>
                 <input type="password" id="Password" name="Password" placeholder="Enter your password" required autocomplete="current-password" />
-                
                 <span class="field-validation-error" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+
+                <div style="margin-top:8px;">
+                    <label style="display: flex; align-items: center; font-weight: normal;">
+                        <input type="checkbox" onclick="myFunction()" style=" width:auto;" />
+                        Show Password
+                    </label>
+                </div>
             </div>
+            
+
 
             <div class="remember-forgot">
                 
@@ -238,8 +246,19 @@
                 // ...
             }
         });
-
     </script>
+        <script>
+
+                    function myFunction() {
+          var x = document.getElementById("Password");
+          if (x.type === "password") {
+            x.type = "text";
+          } else {
+            x.type = "password";
+          }
+        }
+    </script>
+
     
 </body>
 </html>

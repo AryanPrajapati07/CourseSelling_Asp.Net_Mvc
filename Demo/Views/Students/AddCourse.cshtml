@@ -1,0 +1,538 @@
+﻿
+@{
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Add Courses</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary-color: #4361ee;
+            --secondary-color: #3f37c9;
+            --accent-color: #4895ef;
+            --success-color: #4cc9f0;
+            --warning-color: #f72585;
+            --text-color: #212529;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e9ecef;
+            --dark-gray: #6c757d;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            display: flex;
+            width:100%;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #2b2d42;
+            color: white;
+            padding: 20px 0;
+            height: 100vh;
+            position: fixed;
+        }
+
+        .logo {
+            padding: 0 20px 20px;
+            font-size: 24px;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-icon {
+            margin-right: 10px;
+            background-color: var(--primary-color);
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .menu {
+            list-style: none;
+        }
+
+            .menu li {
+                padding: 10px 20px;
+                margin: 5px 0;
+                cursor: pointer;
+                transition: all 0.3s;
+                border-left: 4px solid transparent;
+            }
+
+                .menu li:hover {
+                    background-color: rgba(255, 255, 255, 0.1);
+                }
+
+                .menu li.active {
+                    background-color: rgba(67, 97, 238, 0.3);
+                    border-left: 4px solid var(--primary-color);
+                }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-icon {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+            width: calc(100% - 250px);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--medium-gray);
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .user-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-name {
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .user-role {
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+        }
+
+        .form-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+            .form-group.full-width {
+                grid-column: span 2;
+            }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+            .form-control:focus {
+                outline: none;
+                border-color: var(--primary-color);
+                box-shadow: 0 0 0 2px rgba(67, 97, 238, 0.2);
+            }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .upload-area {
+            border: 2px dashed var(--medium-gray);
+            border-radius: 4px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .upload-area:hover {
+                border-color: var(--primary-color);
+                background-color: rgba(67, 97, 238, 0.05);
+            }
+
+        .upload-icon {
+            font-size: 24px;
+            color: var(--dark-gray);
+            margin-bottom: 10px;
+        }
+
+        .upload-text {
+            color: var(--dark-gray);
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            font-size: 12px;
+            color: var(--dark-gray);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            grid-column: span 2;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-secondary {
+            background-color: var(--medium-gray);
+            color: var(--text-color);
+        }
+
+            .btn-secondary:hover {
+                background-color: var(--dark-gray);
+                color: white;
+            }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+            .btn-primary:hover {
+                background-color: var(--secondary-color);
+            }
+
+        .price-input {
+            position: relative;
+        }
+
+            .price-input .form-control {
+                padding-left: 25px;
+            }
+
+        .currency-symbol {
+            position: absolute;
+            left: 10px;
+            top: 11px;
+            color: var(--dark-gray);
+        }
+
+        .custom-select {
+            position: relative;
+        }
+
+            .custom-select select {
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                padding-right: 30px;
+            }
+
+        .select-arrow {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            pointer-events: none;
+        }
+
+        .checkbox-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .custom-checkbox {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+            .custom-checkbox input {
+                margin-right: 8px;
+                width: 16px;
+                height: 16px;
+            }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <div class="logo-icon">A</div>
+            <span>Admin Panel</span>
+        </div>
+        <ul class="menu">
+            <li>
+                <div class="menu-item">
+                    <span class="menu-icon">📊</span>
+                    <span>Dashboard</span>
+                </div>
+            </li>
+            <li class="active">
+                <div class="menu-item">
+                    <span class="menu-icon">📚</span>
+                    <span>Courses</span>
+                </div>
+            </li>
+            <li>
+                <a href="/Students/Index" class="menu-link" style="text-decoration:none;color:inherit;">
+                    <div class="menu-item">
+                        <span class="menu-icon">👥</span>
+                        <span>Students</span>
+                    </div>
+                </a>
+            </li>
+            <li>
+                <div class="menu-item">
+                    <span class="menu-icon">👨‍🏫</span>
+                    <span>Instructors</span>
+                </div>
+            </li>
+            <li>
+                <div class="menu-item">
+                    <span class="menu-icon">💰</span>
+                    <span>Payments</span>
+                </div>
+            </li>
+            <li>
+                <div class="menu-item">
+                    <span class="menu-icon">📜</span>
+                    <span>Reports</span>
+                </div>
+            </li>
+            <li>
+                <div class="menu-item">
+                    <span class="menu-icon">⚙️</span>
+                    <span>Settings</span>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <div class="page-title">Add New Course</div>
+            <div class="user-profile">
+                <div class="user-avatar">JD</div>
+                <div class="user-info">
+                    <div class="user-name">John Doe</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <div class="form-title">Course Information</div>
+            <form>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label" for="course-title">Course Title</label>
+                        <input type="text" class="form-control" id="course-title" placeholder="Enter course title">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="course-category">Category</label>
+                        <div class="custom-select">
+                            <select class="form-control" id="course-category">
+                                <option value="">Select category</option>
+                                <option value="development">Development</option>
+                                <option value="business">Business</option>
+                                <option value="design">Design</option>
+                                <option value="marketing">Marketing</option>
+                                <option value="it-software">IT & Software</option>
+                                <option value="personal-development">Personal Development</option>
+                            </select>
+                            <div class="select-arrow">▼</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="course-level">Level</label>
+                        <div class="custom-select">
+                            <select class="form-control" id="course-level">
+                                <option value="">Select level</option>
+                                <option value="beginner">Beginner</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="advanced">Advanced</option>
+                                <option value="all-levels">All Levels</option>
+                            </select>
+                            <div class="select-arrow">▼</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="course-instructor">Instructor</label>
+                        <div class="custom-select">
+                            <select class="form-control" id="course-instructor">
+                                <option value="">Select instructor</option>
+                                <option value="1">Sarah Johnson</option>
+                                <option value="2">Michael Smith</option>
+                                <option value="3">Jessica Williams</option>
+                                <option value="4">David Brown</option>
+                            </select>
+                            <div class="select-arrow">▼</div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="course-price">Price</label>
+                        <div class="price-input">
+                            <span class="currency-symbol">$</span>
+                            <input type="number" class="form-control" id="course-price" placeholder="0.00" step="0.01" min="0">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="course-duration">Duration (hours)</label>
+                        <input type="number" class="form-control" id="course-duration" placeholder="Enter course duration" min="1">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label" for="course-description">Description</label>
+                        <textarea class="form-control" id="course-description" placeholder="Enter course description"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Requirements</label>
+                        <textarea class="form-control" id="course-requirements" placeholder="Enter course requirements (one per line)"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">What Students Will Learn</label>
+                        <textarea class="form-control" id="course-outcomes" placeholder="Enter learning outcomes (one per line)"></textarea>
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Course Thumbnail</label>
+                        <div class="upload-area" onclick="document.getElementById('thumbnail-upload').click()">
+                            <div class="upload-icon">📷</div>
+                            <div class="upload-text">Click to upload image</div>
+                            <div class="upload-hint">Recommended size: 1280x720px (16:9)</div>
+                        </div>
+                        <input type="file" id="thumbnail-upload" hidden accept="image/*">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Course Preview Video</label>
+                        <div class="upload-area" onclick="document.getElementById('video-upload').click()">
+                            <div class="upload-icon">🎬</div>
+                            <div class="upload-text">Click to upload video</div>
+                            <div class="upload-hint">Max file size: 100MB (MP4 format)</div>
+                        </div>
+                        <input type="file" id="video-upload" hidden accept="video/mp4">
+                    </div>
+                    <div class="form-group full-width">
+                        <label class="form-label">Options</label>
+                        <div class="checkbox-group">
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="featured"> Featured Course
+                            </label>
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="certificate"> Certificate on Completion
+                            </label>
+                            <label class="custom-checkbox">
+                                <input type="checkbox" id="published" checked> Publish Immediately
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Course</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Basic form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const title = document.getElementById('course-title').value;
+            const category = document.getElementById('course-category').value;
+            const price = document.getElementById('course-price').value;
+
+            if (!title) {
+                alert('Please enter a course title');
+                return;
+            }
+
+            if (!category) {
+                alert('Please select a category');
+                return;
+            }
+
+            // Form validation passed
+            alert('Course added successfully!');
+            // In a real application, you would submit the form data to a server here
+
+            // Reset form
+            this.reset();
+        });
+    </script>
+</body>
+</html>
