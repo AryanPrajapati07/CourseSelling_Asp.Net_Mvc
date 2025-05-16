@@ -22,6 +22,8 @@ namespace Demo.Models
         [MaxLength(100)]
         public string ImageFileName { get; set; }
 
+        public string Age { get; set; }
+
 
     }
 }

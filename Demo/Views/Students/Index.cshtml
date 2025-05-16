@@ -1,50 +1,75 @@
 ﻿@model List<Student>
+
 @{
+
+
+	var searchTerm = Context.Request.Query.ContainsKey("searchString")
+		? Context.Request.Query["searchString"].ToString()
+		: "";
+
+
+
 }
 
-<h2 class="text-center mb-5">List of Students</h2>
-
-<div class="row mb-5">
-	<div class="col">
-		<a class="btn btn-primary" asp-controller="Students" asp-action="Create">New Student</a>
+<h2 class="text-center mb-5 mt-5">Learning Management System</h2>
+<form method="get" asp-controller="Students" asp-action="Index">
+	<div class="row mb-5">
+		<div class="col">
+			<a class="btn btn-primary" asp-controller="Students" asp-action="Create">New Student</a>
+		</div>
+		@* <div class="col"> *@
+		@* 	<a class="btn btn-primary" asp-controller="Students" asp-action="Create">Add Marks</a> *@
+		@* </div> *@
+		@* <div class="col"> *@
+		@* 	<a class="btn btn-primary" asp-controller="Students" asp-action="Create">New Student</a> *@
+		@* </div> *@
+		@* <div class="col"> *@
+		@* 	<a class="btn btn-primary" asp-controller="Students" asp-action="Create">New Student</a> *@
+		@* </div> *@
+		@* <div class="col"> *@
+		@* 	<a class="btn btn-primary" asp-controller="Students" asp-action="Create">New Student</a> *@
+		@* </div> *@
+		<div class="input-group mt-3">
+			<input type="text" name="searchString" class="form-control" placeholder="Search by name or email..." value="@searchTerm" />
+			<button type="submit" class="btn btn-primary">Search</button>
+		</div>
 	</div>
-	<div class="col"></div>
-</div>
+	<h2 class="text-center mb-5 mt-5">List of Students</h2>
 
-
-<table class="table">
-	<thead>
-		<tr>
-			<th>Id</th>
-			<th>Name</th>
-			<th>Email</th>
-			<th>Gender</th>
-			<th>Date</th>
-
-			<th>Image</th>
-
-			<th>Action</th>
-
-		</tr>
-	</thead>
-
-	<tbody>
-		@foreach (var student in Model)
-		{
+	<table class="table">
+		<thead>
 			<tr>
-				<td>@student.Id</td>
-				<td>@student.Name</td>
-				<td>@student.Email</td>
-				<td>@student.Gender</td>
-				<td>@student.Dob.ToString("MM/dd/yyyy")</td>
-				<td><img src="@student.ImageFileName" alt="Student Image" width="50" height="50" /></td>
-
-				<td style="white-space:nowrap">
-					<a class="btn btn-primary btn-sm" asp-controller="Students" asp-action="Edit" asp-route-id="@student.Id">Edit</a>
-					<a class="btn btn-primary btn-sm" asp-controller="Students" asp-action="Delete" asp-route-id="@student.Id">Delete</a>
-				</td>
+				<th>Id</th>
+				<th>Name</th>
+				<th>Email</th>
+				<th>Gender</th>
+				<th>Age</th>
+				<th>Date</th>
+				<th>Image</th>
+				<th>Action</th>
 
 			</tr>
-		}
-	</tbody>
-</table>
+		</thead>
+
+		<tbody>
+			@foreach (var student in Model)
+			{
+				<tr>
+					<td>@student.Id</td>
+					<td>@student.Name</td>
+					<td>@student.Email</td>
+					<td>@student.Gender</td>
+					<td>@student.Age</td>
+					<td>@student.Dob.ToString("dd/MM/yyyy")</td>
+					<td><img src="@student.ImageFileName" alt="Student Image" width="50" height="50" /></td>
+					<td style="white-space:nowrap">
+						<a class="btn btn-primary btn-sm" asp-controller="Students" asp-action="Edit" asp-route-id="@student.Id">Edit</a>
+						<a class="btn btn-primary btn-sm" asp-controller="Students" asp-action="Delete" asp-route-id="@student.Id">Delete</a>
+					</td>
+
+				</tr>
+			}
+		</tbody>
+	</table>
+
+</form>

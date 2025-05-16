@@ -18,5 +18,7 @@ namespace Demo.Models
         public DateTime DOB { get; set; }
 
         public IFormFile ImageFile { get; set; }
+
+        public string Age { get; set; }
     }
 }

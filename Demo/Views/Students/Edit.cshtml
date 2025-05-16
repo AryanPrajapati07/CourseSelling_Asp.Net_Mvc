@@ -1,9 +1,17 @@
 ﻿@model Demo.Models.Student
 
+@if (!string.IsNullOrEmpty(Model.ImageFileName))
+{
+    <div class="mb-3" style="display:none;">
+        <img src="@Model.ImageFileName" alt="Student Image" style="max-width: 150px; max-height: 150px;" />
+    </div>
+}
+
+
 <form asp-action="Edit" method="post">
     @Html.AntiForgeryToken()
 
-    <div class="row">
+    <div class="row mt-5">
         <div class="col-md-8 mx-auto rounded border p-3">
             <h2 class="text-center mb-5">New Student</h2>
 
@@ -40,6 +48,14 @@
                 <div class="col-sm-8">
                     <input class="form-control" asp-for="Dob" type="date" />
                     <span asp-validation-for="Dob" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-4 col-form-label">Age</label>
+                <div class="col-sm-8">
+                    <input class="form-control" asp-for="Age"  />
+                    <span asp-validation-for="Age" class="text-danger"></span>
                 </div>
             </div>
 

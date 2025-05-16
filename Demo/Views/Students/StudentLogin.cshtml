@@ -1,0 +1,245 @@
+﻿
+@{
+}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Login</title>
+    <style>
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .login-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 420px;
+            padding: 30px;
+            box-sizing: border-box;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-header h1 {
+            color: #333;
+            margin: 0;
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        .login-header p {
+            color: #666;
+            margin-top: 8px;
+            font-size: 16px;
+        }
+
+        .login-form .form-group {
+            margin-bottom: 20px;
+        }
+
+        .login-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        .login-form input:focus {
+            border-color: #ff9966;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255, 153, 102, 0.2);
+        }
+
+        .field-validation-error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: block;
+        }
+
+        .input-validation-error {
+            border-color: #e74c3c !important;
+        }
+
+        .input-validation-error:focus {
+            box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2) !important;
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .remember-forgot label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .remember-forgot input[type="checkbox"] {
+            width: auto;
+            margin-right: 5px;
+        }
+
+        .remember-forgot a {
+            color: #ff9966;
+            text-decoration: none;
+        }
+
+        .remember-forgot a:hover {
+            text-decoration: underline;
+        }
+
+        .login-button {
+            background: linear-gradient(135deg, #ff9966, #ff5e62);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .login-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(255, 94, 98, 0.3);
+        }
+
+        .login-button:active {
+            transform: translateY(0);
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 15px;
+            color: #666;
+        }
+
+        .register-link a {
+            color: #ff9966;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        .validation-summary-errors {
+            background-color: #fdf2f2;
+            border-left: 4px solid #e74c3c;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .validation-summary-errors ul {
+            margin: 0;
+            padding-left: 20px;
+            color: #e74c3c;
+        }
+
+         
+            .login-container {
+                padding: 20px;
+                margin-left:450px;
+                /* margin: 15px; */
+            }
+        
+    </style>
+</head>
+<body>
+    <form asp-controller="Students" asp-action="StudentLogin" method="post" class="login-form">
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "validation-summary-errors" })
+    <div class="login-container">
+        <div class="login-header">
+            <h1>Student Login</h1>
+            <p>Access your courses and learning materials</p>
+        </div>
+
+
+            <div class="validation-summary-errors" style="display: none;">
+                <ul>
+                    <li style="display:none"></li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label for="Email">Email Address</label>
+                <input type="email" id="Email" name="Email" placeholder="Enter your email address" required autocomplete="email" />
+                <span class="field-validation-error" data-valmsg-for="Email" data-valmsg-replace="true"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="Password">Password</label>
+                <input type="password" id="Password" name="Password" placeholder="Enter your password" required autocomplete="current-password" />
+                
+                <span class="field-validation-error" data-valmsg-for="Password" data-valmsg-replace="true"></span>
+            </div>
+
+            <div class="remember-forgot">
+                
+                <a href="/Student/ForgotPassword">Forgot Password?</a>
+            </div>
+
+            <label>Password is your name and day & month of your birth without space.</label>
+            
+            <button type="submit" asp-controller="Students" asp-action="StudentLogin" class="login-button">Login</button>
+
+            <div class="register-link">
+                Don't have an account? <a href="/Student/Register">Register here</a>
+            </div>
+        
+    </div>
+    </form>
+
+    <!-- Scripts -->
+    <script src="/Scripts/jquery.validate.min.js"></script>
+    <script src="/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+            $(".login-form").validate({
+            rules: {
+                Email: {
+                    required: true,
+                    email: true
+                },
+                // ...
+            }
+        });
+
+    </script>
+    
+</body>
+</html>
