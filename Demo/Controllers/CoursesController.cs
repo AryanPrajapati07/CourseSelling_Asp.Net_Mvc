@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Demo.Models;
 using Demo.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Demo.Controllers
 {
@@ -66,5 +67,26 @@ namespace Demo.Controllers
             }
             return View(course);
         }
+
+        public IActionResult Dashboard(String searchCourse)
+        {
+            
+            //var courses = context.Courses.ToList();
+            //return View(courses);
+
+            var courses = context.Courses.AsQueryable();
+
+            if (!string.IsNullOrEmpty(searchCourse))
+            {
+                courses = courses.Where(c => c.CourseTitle.Contains(searchCourse) || c.Level.Contains(searchCourse));
+            }
+
+            
+
+            return View(courses.ToList());
+        }
+
     }
+
 }
+

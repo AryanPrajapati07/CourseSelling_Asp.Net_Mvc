@@ -343,16 +343,20 @@
         </div>
         <ul class="menu">
             <li>
+                <a href="/Courses/Dashboard" class="menu-link" style="text-decoration:none;color:inherit;">
                 <div class="menu-item">
                     <span class="menu-icon">📊</span>
                     <span>Dashboard</span>
                 </div>
+                </a>
             </li>
             <li class="active">
+                <a href="/Students/AddCourse" class="menu-link" style="text-decoration:none;color:inherit;">
                 <div class="menu-item">
                     <span class="menu-icon">📚</span>
                     <span>Courses</span>
                 </div>
+                </a>
             </li>
             <li>
                 <a href="/Students/Index" class="menu-link" style="text-decoration:none;color:inherit;">
@@ -443,14 +447,14 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="course-instructor">Instructor</label>
+                        <label class="form-label" asp-for="Instructor">Instructor</label>
                         <div class="custom-select">
                             <select class="form-control" asp-for="Instructor" id="course-instructor">
                                 <option value="">Select instructor</option>
-                                <option value="1">Sarah Johnson</option>
-                                <option value="2">Michael Smith</option>
-                                <option value="3">Jessica Williams</option>
-                                <option value="4">David Brown</option>
+                                <option value="Sarah Johnson">Sarah Johnson</option>
+                                <option value="Michael Smith">Michael Smith</option>
+                                <option value="Jessica Williams">Jessica Williams</option>
+                                <option value="David Brown">David Brown</option>
                             </select>
                             <span asp-validation-for="Instructor"></span>
                             <div class="select-arrow">▼</div>
@@ -517,8 +521,7 @@
                     @*     </div> *@
                     @* </div> *@
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/Courses/Index'">Cancel</button>
-
+                       
                         <button type="submit" class="btn btn-primary">Add Course</button>
                     </div>
                 </div>
