@@ -1,4 +1,4 @@
-﻿
+﻿@model Demo.Models.Course
 @{
 }
 <!DOCTYPE html>
@@ -324,6 +324,14 @@
                 width: 16px;
                 height: 16px;
             }
+
+        span.field-validation-error {
+            color: var(--warning-color);
+            font-size: 12px;
+            margin-top: 5px;
+            display: block;
+        }
+
     </style>
 </head>
 <body>
@@ -393,19 +401,21 @@
                 </div>
             </div>
         </div>
-
+       
         <div class="form-container">
             <div class="form-title">Course Information</div>
-            <form>
+            <form asp-controller="Courses" asp-action="Add" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label class="form-label" for="course-title">Course Title</label>
-                        <input type="text" class="form-control" id="course-title" placeholder="Enter course title">
-                    </div>
+					<div class="form-group">
+						<label asp-for="CourseTitle" class="form-label" >Course Title</label>
+                        <input type="text" class="form-control" asp-for="CourseTitle" id="course-title" placeholder="Enter course title" />
+						<span asp-validation-for="CourseTitle"></span>
+					</div>
                     <div class="form-group">
                         <label class="form-label" for="course-category">Category</label>
                         <div class="custom-select">
-                            <select class="form-control" id="course-category">
+                            <select class="form-control" asp-for="Category" id="course-category">
                                 <option value="">Select category</option>
                                 <option value="development">Development</option>
                                 <option value="business">Business</option>
@@ -414,125 +424,134 @@
                                 <option value="it-software">IT & Software</option>
                                 <option value="personal-development">Personal Development</option>
                             </select>
+                            <span asp-validation-for="Category"></span>
                             <div class="select-arrow">▼</div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="course-level">Level</label>
                         <div class="custom-select">
-                            <select class="form-control" id="course-level">
+                            <select class="form-control" asp-for="Level" id="course-level">
                                 <option value="">Select level</option>
                                 <option value="beginner">Beginner</option>
                                 <option value="intermediate">Intermediate</option>
                                 <option value="advanced">Advanced</option>
                                 <option value="all-levels">All Levels</option>
                             </select>
+                            <span asp-validation-for="Level"></span>
                             <div class="select-arrow">▼</div>
                         </div>
                     </div>
                     <div class="form-group">
                         <label class="form-label" for="course-instructor">Instructor</label>
                         <div class="custom-select">
-                            <select class="form-control" id="course-instructor">
+                            <select class="form-control" asp-for="Instructor" id="course-instructor">
                                 <option value="">Select instructor</option>
                                 <option value="1">Sarah Johnson</option>
                                 <option value="2">Michael Smith</option>
                                 <option value="3">Jessica Williams</option>
                                 <option value="4">David Brown</option>
                             </select>
+                            <span asp-validation-for="Instructor"></span>
                             <div class="select-arrow">▼</div>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="course-price">Price</label>
+                        <label class="form-label" asp-for="Price">Price</label>
                         <div class="price-input">
                             <span class="currency-symbol">$</span>
-                            <input type="number" class="form-control" id="course-price" placeholder="0.00" step="0.01" min="0">
+                            <input type="number" asp-for="Price" class="form-control" id="course-price" placeholder="0.00" step="0.01" min="0"/>
+                            <span asp-validation-for="Price"></span>
                         </div>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" for="course-duration">Duration (hours)</label>
-                        <input type="number" class="form-control" id="course-duration" placeholder="Enter course duration" min="1">
+                        <label class="form-label" asp-for="Hours">Duration (hours)</label>
+                        <input type="number" asp-for="Hours" class="form-control" id="course-duration" placeholder="Enter course duration" min="1">
+                        <span asp-validation-for="Hours"></span>
                     </div>
                     <div class="form-group full-width">
-                        <label class="form-label" for="course-description">Description</label>
-                        <textarea class="form-control" id="course-description" placeholder="Enter course description"></textarea>
+                        <label class="form-label" asp-for="Description">Description</label>
+                        <textarea class="form-control" asp-for="Description" id="course-description" placeholder="Enter course description"></textarea>
+                        <span asp-validation-for="Description"></span>
                     </div>
                     <div class="form-group full-width">
-                        <label class="form-label">Requirements</label>
-                        <textarea class="form-control" id="course-requirements" placeholder="Enter course requirements (one per line)"></textarea>
+                        <label class="form-label" asp-for="Requirements">Requirements</label>
+                        <textarea class="form-control" asp-for="Requirements" id="course-requirements" placeholder="Enter course requirements (one per line)"></textarea>
+                        <span asp-validation-for="Requirements"></span>
                     </div>
                     <div class="form-group full-width">
-                        <label class="form-label">What Students Will Learn</label>
-                        <textarea class="form-control" id="course-outcomes" placeholder="Enter learning outcomes (one per line)"></textarea>
+                        <label class="form-label" asp-for="WhatLearn">What Students Will Learn</label>
+                        <textarea class="form-control" asp-for="WhatLearn" id="course-outcomes" placeholder="Enter learning outcomes (one per line)"></textarea>
+                        <span asp-validation-for="WhatLearn"></span>
                     </div>
                     <div class="form-group full-width">
-                        <label class="form-label">Course Thumbnail</label>
+                        <label class="form-label" asp-for="ImageFile">Course Thumbnail</label>
                         <div class="upload-area" onclick="document.getElementById('thumbnail-upload').click()">
                             <div class="upload-icon">📷</div>
                             <div class="upload-text">Click to upload image</div>
                             <div class="upload-hint">Recommended size: 1280x720px (16:9)</div>
                         </div>
-                        <input type="file" id="thumbnail-upload" hidden accept="image/*">
+                        <input type="file" asp-for="ImageFile" id="thumbnail-upload" hidden accept="image/*">
                     </div>
                     <div class="form-group full-width">
-                        <label class="form-label">Course Preview Video</label>
+                        <label class="form-label" asp-for="Video">Course Preview Video</label>
                         <div class="upload-area" onclick="document.getElementById('video-upload').click()">
                             <div class="upload-icon">🎬</div>
                             <div class="upload-text">Click to upload video</div>
                             <div class="upload-hint">Max file size: 100MB (MP4 format)</div>
                         </div>
-                        <input type="file" id="video-upload" hidden accept="video/mp4">
+                        <input type="file" asp-for="Video" id="video-upload" hidden accept="video/mp4">
                     </div>
-                    <div class="form-group full-width">
-                        <label class="form-label">Options</label>
-                        <div class="checkbox-group">
-                            <label class="custom-checkbox">
-                                <input type="checkbox" id="featured"> Featured Course
-                            </label>
-                            <label class="custom-checkbox">
-                                <input type="checkbox" id="certificate"> Certificate on Completion
-                            </label>
-                            <label class="custom-checkbox">
-                                <input type="checkbox" id="published" checked> Publish Immediately
-                            </label>
-                        </div>
-                    </div>
+                    @* <div class="form-group full-width"> *@
+                    @*     <label class="form-label">Options</label> *@
+                    @*     <div class="checkbox-group"> *@
+                    @*         <label class="custom-checkbox"> *@
+                    @*             <input type="checkbox" id="featured"> Featured Course *@
+                    @*         </label> *@
+                    @*         <label class="custom-checkbox"> *@
+                    @*             <input type="checkbox" id="certificate"> Certificate on Completion *@
+                    @*         </label> *@
+                    @*         <label class="custom-checkbox"> *@
+                    @*             <input type="checkbox" id="published" checked> Publish Immediately *@
+                    @*         </label> *@
+                    @*     </div> *@
+                    @* </div> *@
                     <div class="form-actions">
-                        <button type="button" class="btn btn-secondary">Cancel</button>
+                        <button type="button" class="btn btn-secondary" onclick="window.location.href='/Courses/Index'">Cancel</button>
+
                         <button type="submit" class="btn btn-primary">Add Course</button>
                     </div>
                 </div>
             </form>
         </div>
+        
     </div>
 
-    <script>
-        // Basic form validation
-        document.querySelector('form').addEventListener('submit', function(e) {
-            e.preventDefault();
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
 
+    <script>
+        document.querySelector('form').addEventListener('submit', function (e) {
             const title = document.getElementById('course-title').value;
             const category = document.getElementById('course-category').value;
             const price = document.getElementById('course-price').value;
 
             if (!title) {
                 alert('Please enter a course title');
+                e.preventDefault();
                 return;
             }
 
             if (!category) {
                 alert('Please select a category');
+                e.preventDefault();
                 return;
             }
 
-            // Form validation passed
-            alert('Course added successfully!');
-            // In a real application, you would submit the form data to a server here
-
-            // Reset form
-            this.reset();
+            // Allow form to submit if all validations pass
         });
     </script>
+
 </body>
 </html>

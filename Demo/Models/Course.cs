@@ -1,22 +1,51 @@
-﻿namespace Demo.Models
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
+
+namespace Demo.Models
 {
     public class Course
     {
 
         public int Id { get; set; }
-        public string CourseTitle { get; set; }
-        public string Category { get; set; }
-        public string Level { get; set; }
-        public string Instructor { get; set; }
-        public decimal Price { get; set; }
-        public string Hours { get; set; }
-        public string Description { get; set; }
-        public string Requirements { get; set; }
-        public string WhatLearn { get; set; }
-        public IFormFile Tumbnail { get; set; }
-        public IFormFile Video { get; set; }
-        public string Options { get; set; }
 
-      
+        [Required,MaxLength(100)]
+        public string CourseTitle { get; set; }
+        
+        [Required]
+        public string Category { get; set; }
+
+        [Required]
+        public string Level { get; set; }
+
+        [Required]
+        public string Instructor { get; set; }
+
+        [Precision(16, 2)]
+        public decimal Price { get; set; }
+
+        [Required]
+        public string Hours { get; set; }
+
+        [Required]
+        public string Description { get; set; }
+
+        [Required]
+        public string Requirements { get; set; }
+
+        [Required]
+        public string WhatLearn { get; set; }
+
+        [NotMapped]
+        public IFormFile? ImageFile { get; set; }
+
+        [NotMapped]
+        public IFormFile? Video { get; set; }
+        //public string Options { get; set; }
+
+        public string? ImagePath { get; set; }
+        public string? VideoPath { get; set; }
+
+
     }
 }
