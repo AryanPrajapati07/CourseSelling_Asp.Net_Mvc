@@ -3,6 +3,7 @@ using Demo.Services;
 using MathNet.Numerics.Distributions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 
 namespace Demo.Controllers
 {
@@ -33,21 +34,21 @@ namespace Demo.Controllers
             {
                 students = students.Where(s => s.Name.Contains(searchString) || s.Email.Contains(searchString));
             }
-            
-                //var students = context.Students.ToList();
 
-                return View(students.ToList());
+            //var students = context.Students.ToList();
+
+            return View(students.ToList());
         }
 
 
         //Add Student Data
         public IActionResult Create()
         {
-            
+
             return View();
         }
 
-        
+
         [ValidateAntiForgeryToken]
         [HttpPost]
         public IActionResult Create(StudentDto studentDto)
@@ -118,7 +119,7 @@ namespace Demo.Controllers
             }
             catch (Exception ex)
             {
-                
+
                 return Content("Error: " + ex.Message);
             }
         }
@@ -162,10 +163,10 @@ namespace Demo.Controllers
         }
 
 
-        
+
         public IActionResult Edit(int id)
         {
-            
+
             var student = context.Students.FirstOrDefault(s => s.Id == id);
 
             if (student == null)
@@ -173,7 +174,7 @@ namespace Demo.Controllers
                 return NotFound();
             }
 
-           
+
             return View(student);
         }
 
@@ -269,20 +270,23 @@ namespace Demo.Controllers
         //student home page
         public IActionResult StudentHome()
         {
-            var email = TempData["StudentEmail"] as string;
-            if(string.IsNullOrEmpty(email))
-            {
-                return RedirectToAction(nameof(StudentLogin));
-            }
-
-            var student = context.Students.FirstOrDefault(s => s.Email == email);
-            if(student == null)
-            {
-                return NotFound();
-            }
-            return View(student);
+            return View();
         }
 
+
+        public IActionResult StudentCourses()
+        {
+
+            var courses = context.Courses.ToList();
+            return View(courses);
+        }
+
+        public IActionResult CourseDetails(int id) 
+        {
+            var course = context.Courses.FirstOrDefault(c => c.Id == id);
+            if (course == null) return NotFound();
+            return View(course);
+        }
 
     }
 }

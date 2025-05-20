@@ -46,6 +46,6 @@ namespace Demo.Models
         public string? ImagePath { get; set; }
         public string? VideoPath { get; set; }
 
-
+       
     }
 }

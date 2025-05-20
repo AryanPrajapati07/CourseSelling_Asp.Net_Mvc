@@ -8,255 +8,891 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Profile | Learning Management System</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Enhanced Learning Platform</title>
     <style>
-        .profile-card {
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            transition: transform 0.3s ease;
+        /* Reset and base styles */
+        * {
+
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-            .profile-card:hover {
-                transform: translateY(-5px);
+        body {
+            
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* Container */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        /* Header and Navigation */
+        header {
+            background-color: #ffffff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4361ee;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-icon {
+            margin-right: 10px;
+            font-size: 28px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+
+            .nav-links li a {
+                text-decoration: none;
+                color: #333;
+                font-weight: 500;
+                transition: color 0.3s;
+                padding: 8px 12px;
+                border-radius: 5px;
             }
 
-        .profile-header {
-            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+                .nav-links li a:hover {
+                    color: #4361ee;
+                    background-color: #f0f4ff;
+                }
+
+                .nav-links li a.active {
+                    color: #4361ee;
+                    font-weight: 600;
+                }
+
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+
+        .btn-login {
+            border: 1px solid #4361ee;
+            color: #4361ee;
+            background-color: transparent;
+        }
+
+            .btn-login:hover {
+                background-color: #f0f4ff;
+            }
+
+        .btn-signup {
+            background-color: #4361ee;
             color: white;
-            padding: 30px 0;
+            border: none;
+        }
+
+            .btn-signup:hover {
+                background-color: #3a56d4;
+            }
+
+        /* Hero Section */
+        .hero {
+            padding: 60px 0;
+            text-align: center;
+            background: linear-gradient(to right, #e9f1ff, #f0f4ff);
+            border-radius: 15px;
+            margin: 40px 0;
+        }
+
+            .hero h1 {
+                font-size: 2.8rem;
+                margin-bottom: 20px;
+                color: #1a365d;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+                color: #4a5568;
+                max-width: 700px;
+                margin: 0 auto 30px;
+            }
+
+        .search-bar {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            background-color: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+            .search-bar input {
+                flex: 1;
+                padding: 15px 20px;
+                border: none;
+                outline: none;
+                font-size: 16px;
+            }
+
+        .search-btn {
+            background-color: #4361ee;
+            color: white;
+            border: none;
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+            .search-btn:hover {
+                background-color: #3a56d4;
+            }
+
+        /* Course Section */
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 40px;
+            color: #1a365d;
             position: relative;
         }
 
-        .profile-img-container {
-            position: relative;
-            width: 150px;
-            height: 150px;
+            .section-title:after {
+                content: '';
+                position: absolute;
+                bottom: -10px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80px;
+                height: 4px;
+                background-color: #4361ee;
+                border-radius: 2px;
+            }
+
+        .course-card {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            max-width: 800px;
             margin: 0 auto;
         }
 
-        .profile-img {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 5px solid white;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .profile-info-item {
-            padding: 12px 0;
-            border-bottom: 1px solid #eee;
-        }
-
-            .profile-info-item:last-child {
-                border-bottom: none;
+            .course-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
             }
 
-        .info-label {
-            color: #6c757d;
-            font-weight: 600;
+        .course-image {
+            height: 220px;
+            overflow: hidden;
+            position: relative;
         }
 
-        .info-value {
-            font-weight: 500;
+            .course-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.5s;
+            }
+
+        .course-card:hover .course-image img {
+            transform: scale(1.05);
         }
 
-        .badge-gender {
-            padding: 6px 12px;
-            border-radius: 30px;
-            font-weight: 500;
-            font-size: 0.85rem;
-        }
-
-        .edit-btn {
+        .course-badge {
             position: absolute;
             top: 15px;
             right: 15px;
-            background-color: rgba(255, 255, 255, 0.2);
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            background-color: #4361ee;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .course-details {
+            padding: 25px;
+        }
+
+        .course-instructor {
             display: flex;
             align-items: center;
-            justify-content: center;
-            transition: background-color 0.3s ease;
+            margin-bottom: 15px;
         }
 
-            .edit-btn:hover {
-                background-color: rgba(255, 255, 255, 0.4);
+        .instructor-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            object-fit: cover;
+        }
+
+        .instructor-info {
+            font-size: 14px;
+        }
+
+        .instructor-name {
+            font-weight: 600;
+            color: #1a365d;
+        }
+
+        .instructor-title {
+            color: #718096;
+        }
+
+        .course-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #1a365d;
+        }
+
+        .course-description {
+            color: #4a5568;
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .course-stats {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px 0;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .stat-value {
+            font-weight: 700;
+            font-size: 18px;
+            color: #1a365d;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .course-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price {
+            font-size: 24px;
+            font-weight: 700;
+            color: #4361ee;
+        }
+
+        .enroll-btn {
+            background-color: #4361ee;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border: none;
+        }
+
+            .enroll-btn:hover {
+                background-color: #3a56d4;
             }
 
-        .student-name {
-            margin-top: 15px;
-            font-weight: 700;
+        /* Categories Section */
+        .categories-section {
+            margin: 60px 0;
         }
 
-        .student-email {
-            opacity: 0.8;
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+        }
+
+        .category-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+            .category-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+            }
+
+        .category-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        .category-card h3 {
+            color: #1a365d;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .category-card p {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .category-link {
+            color: #4361ee;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: color 0.3s;
+        }
+
+            .category-link:hover {
+                color: #3a56d4;
+            }
+
+        /* Why Choose Us Section */
+        .why-us-section {
+            margin: 80px 0;
+            background-color: #f8fafc;
+            padding: 50px 0;
+            border-radius: 15px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            padding: 25px;
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            color: #1a365d;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .feature-card p {
+            color: #718096;
             font-size: 0.95rem;
+            line-height: 1.6;
         }
 
-        /* Responsive adjustments */
-        (max-width: 768px) {
-            .profile-img-container
+        /* Stats Section */
+        .stats-section {
+            margin: 60px 0;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            background-color: #4361ee;
+            padding: 40px 20px;
+            border-radius: 15px;
+            color: white;
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.3);
+        }
+
+        .stat-counter {
+            text-align: center;
+            padding: 0 15px;
+            flex: 1;
+            min-width: 150px;
+            margin: 10px 0;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-text {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Testimonials Section */
+        .testimonials-section {
+            margin: 80px 0;
+        }
+
+        .testimonials-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .testimonial-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .testimonial-text {
+            color: #4a5568;
+            font-style: italic;
+            line-height: 1.7;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+            .testimonial-text:before {
+                content: '"';
+                font-size: 4rem;
+                opacity: 0.1;
+                position: absolute;
+                top: -20px;
+                left: -15px;
+                color: #4361ee;
+            }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .testimonial-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            object-fit: cover;
+        }
+
+        .author-name {
+            font-weight: 600;
+            color: #1a365d;
+        }
+
+        .author-title {
+            font-size: 0.85rem;
+            color: #718096;
+        }
+
+        background-color: #1a365d;
+        color: white;
+        padding: 50px 0 20px;
+        margin-top: 80px;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 200px;
+        }
+
+            .footer-section h3 {
+                font-size: 18px;
+                margin-bottom: 20px;
+                position: relative;
+                padding-bottom: 10px;
+            }
+
+                .footer-section h3:after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    width: 40px;
+                    height: 3px;
+                    background-color: #4361ee;
+                }
+
+            .footer-section ul {
+                list-style: none;
+            }
+
+                .footer-section ul li {
+                    margin-bottom: 10px;
+                }
+
+                    .footer-section ul li a {
+                        color: #cbd5e0;
+                        text-decoration: none;
+                        transition: color 0.3s;
+                    }
+
+                        .footer-section ul li a:hover {
+                            color: white;
+                        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #2d4a77;
+            color: #cbd5e0;
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        (max-width: 992px) {
+            .navbar
 
         {
-            width: 120px;
-            height: 120px;
+            flex-direction: column;
+            gap: 15px;
         }
 
-        .profile-img {
-            width: 120px;
-            height: 120px;
+        .nav-links {
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .auth-buttons {
+            margin-top: 10px;
         }
 
         }
+
+        (max-width: 768px) {
+            .hero h1
+
+        {
+            font-size: 2.2rem;
+        }
+
+        .hero p {
+            font-size: 1rem;
+        }
+
+        .course-stats {
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        }
+
+        
+            .course-footer
+
+        {
+            flex-direction: row;
+            gap: 15px;
+        }
+
+        .footer-content {
+            flex-direction: row;
+            
+            gap: 30px;
+        }
+
+        
     </style>
 </head>
-<body class="bg-light">
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            <div class="col-lg-8 col-md-10">
-                <!-- Page Heading -->
-                <h1 class="text-center mb-5">
-                    <i class="fas fa-graduation-cap me-2"></i>
-                    Learning Management System
-                </h1>
+<body>
+    <!-- Header with Enhanced Navigation -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <span class="logo-icon">🎓</span> EduMaster
+                </a>
+                <ul class="nav-links">
+                    <li><a asp-controller="Students" asp-action="StudentHome" class="active">Home</a></li>
+                    <li><a asp-controller="Students" asp-action="StudentCourses">Courses</a></li>
+                    <li><a href="#">Resources</a></li>
+                    <li><a href="#">About Us</a></li>
+                    <li><a href="#">Support</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <a href="#" class="btn btn-login">Log In</a>
+                    <a href="#" class="btn btn-signup">Sign Up</a>
+                </div>
+            </nav>
+        </div>
+    </header>
 
-                <!-- Student Profile Card -->
-                <div class="card profile-card mb-4">
-                    <!-- Profile Header -->
-                    <div class="profile-header text-center">
-                        <a asp-page="/Students/Edit" asp-route-id="@Model.Id" class="edit-btn text-white" title="Edit Profile">
-                            <i class="fas fa-pencil-alt"></i>
-                        </a>
+    <!-- Hero Section -->
+    <div class="container">
+        <section class="hero">
+            <h1>Enhance Your Skills with Expert-Led Courses</h1>
+            <p>Discover thousands of courses taught by industry experts and transform your career with in-demand skills.</p>
+            <div class="search-bar">
+                <input type="text" placeholder="What do you want to learn today?">
+                <button class="search-btn">Search</button>
+            </div>
+        </section>
 
-                        <div class="profile-img-container">
-                            <img src="@(string.IsNullOrEmpty(Model.ImageFileName) ? "/api/placeholder/150/150" : Model.ImageFileName)"
-                                 alt="@Model.Name's Profile Picture"
-                                 class="profile-img"
-                                 onerror="this.src='/api/placeholder/150/150'; this.onerror=null;" />
-                        </div>
+        <!-- Categories Section -->
+        <section class="categories-section">
+            <h2 class="section-title">Browse Top Categories</h2>
+            <div class="categories-grid">
+                <div class="category-card">
+                    <div class="category-icon">💻</div>
+                    <h3>Web Development</h3>
+                    <p>HTML, CSS, JavaScript, React, Node.js and more</p>
+                    <a href="#" class="category-link">120+ Courses</a>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">📊</div>
+                    <h3>Data Science</h3>
+                    <p>Python, R, Machine Learning, Analytics</p>
+                    <a href="#" class="category-link">85+ Courses</a>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">📱</div>
+                    <h3>Mobile Development</h3>
+                    <p>iOS, Android, Flutter, React Native</p>
+                    <a href="#" class="category-link">65+ Courses</a>
+                </div>
+                <div class="category-card">
+                    <div class="category-icon">🎨</div>
+                    <h3>Design</h3>
+                    <p>UI/UX, Graphic Design, Motion Graphics</p>
+                    <a href="#" class="category-link">90+ Courses</a>
+                </div>
+            </div>
+        </section>
 
-                        <h2 class="student-name">@Model.Name</h2>
-                        <p class="student-email">
-                            <i class="fas fa-envelope me-1"></i>
-                            @Model.Email
-                        </p>
+        <!-- Why Choose Us Section -->
+        <section class="why-us-section">
+            <h2 class="section-title">Why Choose EduMaster</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">👨‍🏫</div>
+                    <h3>Expert Instructors</h3>
+                    <p>Learn from industry professionals with years of real-world experience and passion for teaching.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🏆</div>
+                    <h3>Certificates</h3>
+                    <p>Earn recognized certificates upon completion to showcase your new skills to employers.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔄</div>
+                    <h3>Lifetime Access</h3>
+                    <p>Get unlimited access to course content, including future updates and bonus materials.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💬</div>
+                    <h3>Community Support</h3>
+                    <p>Connect with fellow students and instructors in our active learning community.</p>
+                </div>
+            </div>
+        </section>
 
-                        <div class="mt-3">
-                            @{
-                                var badgeClass = Model.Gender?.ToLower() == "male" ? "bg-primary" :
-                                Model.Gender?.ToLower() == "female" ? "bg-danger" : "bg-info";
-                            }
-                            <span class="badge badge-gender @badgeClass">@Model.Gender</span>
-                        </div>
+        <!-- Stats Counter Section -->
+        <section class="stats-section">
+            <div class="stats-container">
+                <div class="stat-counter">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-text">Courses Available</div>
+                </div>
+                <div class="stat-counter">
+                    <div class="stat-number">50K+</div>
+                    <div class="stat-text">Happy Students</div>
+                </div>
+                <div class="stat-counter">
+                    <div class="stat-number">100+</div>
+                    <div class="stat-text">Expert Instructors</div>
+                </div>
+                <div class="stat-counter">
+                    <div class="stat-number">15+</div>
+                    <div class="stat-text">Languages</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="testimonials-section">
+            <h2 class="section-title">What Our Students Say</h2>
+            <div class="testimonials-container">
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        "EduMaster completely changed my career path. The web development bootcamp gave me all the skills I needed to land my dream job at a tech startup. The instructor support was phenomenal!"
                     </div>
-
-                    <!-- Profile Information -->
-                    <div class="card-body p-4">
-                        <h4 class="mb-4">Student Information</h4>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="profile-info-item">
-                                    <span class="info-label">Student ID</span>
-                                    <div class="info-value">@($"20250{Model.Id}")</div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="profile-info-item">
-                                    <span class="info-label">Enrollment Date</span>
-                                    <div class="info-value">"Not specified"</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="profile-info-item">
-                                    <span class="info-label">Date of Birth</span>
-                                    <div class="info-value">
-                                        @Model.Dob.ToString("MMMM d, yyyy")
-                                        <small class="text-muted">(@Model.Age years old)</small>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="profile-info-item">
-                                    <span class="info-label">Contact Number</span>
-                                    <div class="info-value"> "Not provided"</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="profile-info-item">
-                                    <span class="info-label">Address</span>
-                                    <div class="info-value"> "Not provided"</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mt-4">
-                            <div class="col-12">
-                                <div class="d-flex justify-content-between">
-                                    <a href="/Students" class="btn btn-outline-secondary">
-                                        <i class="fas fa-arrow-left me-2"></i>Back to List
-                                    </a>
-                                    <div>
-                                        <a href="/Students/Courses/@Model.Id" class="btn btn-outline-primary me-2">
-                                            <i class="fas fa-book me-1"></i>View Courses
-                                        </a>
-                                        <a href="/Students/Edit/@Model.Id" class="btn btn-primary">
-                                            <i class="fas fa-user-edit me-1"></i>Edit Profile
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+                    <div class="testimonial-author">
+                        <img src="/api/placeholder/60/60" alt="Student" class="testimonial-avatar">
+                        <div class="author-info">
+                            <div class="author-name">Michael K.</div>
+                            <div class="author-title">Software Developer</div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Academic Progress Section (Can be expanded as needed) -->
-                <div class="card profile-card">
-                    <div class="card-header bg-white">
-                        <h4 class="mb-0">Academic Progress</h4>
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        "I've tried many online learning platforms, but EduMaster stands out with its practical approach and real-world projects. The UI/UX design course helped me transition careers within just 3 months."
                     </div>
-                    <div class="card-body">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            Click on "View Courses" button to see detailed academic progress.
+                    <div class="testimonial-author">
+                        <img src="/api/placeholder/60/60" alt="Student" class="testimonial-avatar">
+                        <div class="author-info">
+                            <div class="author-name">Jennifer T.</div>
+                            <div class="author-title">UI/UX Designer</div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </section>
+
+        <!-- Featured Course Section -->
+        <section>
+            <h2 class="section-title">Featured Course</h2>
+
+            <!-- Single Course Card with Detailed Design -->
+            <div class="course-card">
+                <div class="course-image">
+                    <img src="/api/placeholder/800/500" alt="Web Development Masterclass">
+                    <span class="course-badge">Bestseller</span>
+                </div>
+                <div class="course-details">
+                    <div class="course-instructor">
+                        <img src="/api/placeholder/100/100" alt="Instructor" class="instructor-avatar">
+                        <div class="instructor-info">
+                            <div class="instructor-name">Dr. Sarah Johnson</div>
+                            <div class="instructor-title">Senior Web Developer & Educator</div>
+                        </div>
+                    </div>
+                    <h3 class="course-title">Complete Web Development Bootcamp: HTML, CSS, JavaScript & More</h3>
+                    <p class="course-description">
+                        Master the fundamentals of web development in this comprehensive course. Starting with HTML5 and CSS3,
+                        you'll progress to responsive design techniques, advanced JavaScript concepts, and modern frameworks.
+                        By the end of this bootcamp, you'll be able to build professional, responsive websites from scratch and
+                        deploy them online.
+                    </p>
+                    <div class="course-stats">
+                        <div class="stat">
+                            <span class="stat-value">4.9</span>
+                            <span class="stat-label">Rating</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">24,532</span>
+                            <span class="stat-label">Students</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">42</span>
+                            <span class="stat-label">Hours</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">156</span>
+                            <span class="stat-label">Lessons</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">Beginner</span>
+                            <span class="stat-label">Level</span>
+                        </div>
+                    </div>
+                    <div class="course-footer">
+                        <div class="price">$89.99</div>
+                        <button class="enroll-btn">Enroll Now</button>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
-    <!-- Bootstrap & jQuery JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Initialize tooltips
-        $(function() {
-            $('[data-toggle="tooltip"]').tooltip();
-
-            // Handle image error
-            $('img.profile-img').on('error', function() {
-                $(this).attr('src', '/api/placeholder/150/150');
-            });
-        });
-    </script>
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>About EduMaster</h3>
+                    <ul>
+                        <li><a href="#">Our Story</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Partnerships</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Articles & Guides</a></li>
+                        <li><a href="#">Free Tutorials</a></li>
+                        <li><a href="#">Certification</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Help Center</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Community</h3>
+                    <ul>
+                        <li><a href="#">Discussion Forums</a></li>
+                        <li><a href="#">Student Showcase</a></li>
+                        <li><a href="#">Events & Webinars</a></li>
+                        <li><a href="#">Volunteer</a></li>
+                        <li><a href="#">Ambassador Program</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact Us</h3>
+                    <ul>
+                        <li><a href="#">Contact Support</a></li>
+                        <li><a href="#">Business Inquiries</a></li>
+                        <li><a href="#">Feedback</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 EduMaster. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
 
