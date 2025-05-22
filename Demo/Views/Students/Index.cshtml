@@ -7,6 +7,10 @@
 		? Context.Request.Query["searchString"].ToString()
 		: "";
 
+	// var sortBy = Context.Request.Query.ContainsKey("sortBy") ? Context.Request.Query["sortBy"].ToString() : "";
+	var dobFrom = Context.Request.Query.ContainsKey("dobFrom") ? Context.Request.Query["dobFrom"].ToString() : "";
+	var dobTo = Context.Request.Query.ContainsKey("dobTo") ? Context.Request.Query["dobTo"].ToString() : "";
+
 
 
 }
@@ -233,67 +237,111 @@
 
 
 		<div class="main-content">
-			<div class="header">
-				<div class="page-title">Add New Student</div>
-				<div class="user-profile">
-					<div class="user-avatar">JD</div>
+			<div class="header d-flex justify-content-between align-items-center mb-4">
+				<h2 class="page-title">Add New Student</h2>
+				<div class="user-profile d-flex align-items-center">
+					<div class="user-avatar bg-primary text-white rounded-circle text-center me-2" style="width:40px; height:40px;">JD</div>
 					<div class="user-info">
-						<div class="user-name">John Doe</div>
-						<div class="user-role">Administrator</div>
+						<div class="user-name fw-bold">John Doe</div>
+						<div class="user-role text-muted">Administrator</div>
 					</div>
 				</div>
 			</div>
 
 			<div class="form-container">
+				<div class="mb-4">
+					<a class="btn btn-success mb-3" asp-controller="Students" asp-action="Create">+ New Student</a>
 
-				<div class="row mb-5">
-					<div class="col">
-						<a class="btn btn-primary" asp-controller="Students" asp-action="Create">New Student</a>
+					<!-- Search & Filter Form -->
+					
+						<div class="col-md-4">
+							
+							<input type="text" id="searchString" name="searchString" class="form-control" placeholder="Seach by Name or Email..." value="@searchTerm" />
+						</div>
+
+					<div class="row g-3 align-items-end mt-3">
+						<div class="col-md-2">
+							<label for="sortBy" class="form-label">Sort By</label>
+							<select name="sortBy" id="sortBy" class="form-select">
+								<option value="">None</option>
+								<option value="Name">Name (A-Z)</option>
+								<option value="Age">Age (Youngest First)</option>
+							</select>
+						</div>
+
+						<div class="col-md-2">
+							<label for="gender" class="form-label">Gender</label>
+							<select name="gender" id="gender" class="form-select">
+								<option value="">All</option>
+								<option value="Male">Male</option>
+								<option value="Female">Female</option>
+							</select>
+						</div>
+
+						<div class="col-md-2">
+							<label for="dobFrom" class="form-label">DOB From</label>
+							<input type="date" name="dobFrom" id="dobFrom" class="form-control" value="@dobFrom" />
+						</div>
+
+						<div class="col-md-2">
+							<label for="dobTo" class="form-label">DOB To</label>
+							<input type="date" name="dobTo" id="dobTo" class="form-control" value="@dobTo" />
+						</div>
+
+						<div class="col-md-2 d-grid">
+							<button type="submit" class="btn btn-primary">Apply Filters</button>
+						</div>
 					</div>
 
-
-					<div class="input-group mt-3" style="width:950px;margin-right:100px;">
-						<input type="text" name="searchString" class="form-control" placeholder="Search by name or email..." value="@searchTerm" />
-						<button type="submit" class="btn btn-primary">Search</button>
-					</div>
+					
 				</div>
 
-
-				<table class="table">
-					<thead>
-						<tr>
-							<th>Id</th>
-							<th>Name</th>
-							<th>Email</th>
-							<th>Gender</th>
-							<th>Age</th>
-							<th>Date</th>
-							<th>Image</th>
-							<th>Action</th>
-
-						</tr>
-					</thead>
-
-					<tbody>
-						@foreach (var student in Model)
-						{
+				<!-- Student Table -->
+				<div class="table-responsive">
+					<table class="table table-bordered align-middle">
+						<thead class="table-light">
 							<tr>
-								<td>@student.Id</td>
-								<td>@student.Name</td>
-								<td>@student.Email</td>
-								<td>@student.Gender</td>
-								<td>@student.Age</td>
-								<td>@student.Dob.ToString("dd/MM/yyyy")</td>
-								<td><img src="@student.ImageFileName" alt="Student Image" width="50" height="50" /></td>
-								<td style="white-space:nowrap">
-									<a class="btn btn-primary btn-sm" asp-controller="Students" asp-action="Edit" asp-route-id="@student.Id">Edit</a>
-									<a class="btn btn-primary btn-sm" asp-controller="Students" asp-action="Delete" asp-route-id="@student.Id">Delete</a>
-								</td>
-
+								<th>Id</th>
+								<th>Name</th>
+								<th>Email</th>
+								<th>Gender</th>
+								<th>Age</th>
+								<th>DOB</th>
+								<th>Image</th>
+								<th>Action</th>
 							</tr>
-						}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							@if (Model != null && Model.Any())
+							{
+								foreach (var student in Model)
+								{
+									<tr>
+										<td>@student.Id</td>
+										<td>@student.Name</td>
+										<td>@student.Email</td>
+										<td>@student.Gender</td>
+										<td>@student.Age</td>
+										<td>@student.Dob.ToString("dd/MM/yyyy")</td>
+										<td>
+											<img src="@student.ImageFileName" alt="@student.Name's photo" width="50" height="50" class="img-thumbnail" />
+										</td>
+										<td class="text-nowrap">
+											<a class="btn btn-sm btn-warning" asp-controller="Students" asp-action="Edit" asp-route-id="@student.Id">Edit</a>
+											<a class="btn btn-sm btn-danger" asp-controller="Students" asp-action="Delete" asp-route-id="@student.Id">Delete</a>
+										</td>
+									</tr>
+								}
+							}
+							else
+							{
+								<tr>
+									<td colspan="8" class="text-center text-muted">No students found.</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
 

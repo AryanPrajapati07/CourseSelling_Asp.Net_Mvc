@@ -25,19 +25,39 @@ namespace Demo.Controllers
         }
 
 
-        public IActionResult Index(String searchString)
+        public IActionResult Index(string searchString, string sortBy, string gender, DateTime? dobFrom, DateTime? dobTo)
         {
+            List<Student> students;
 
-            var students = context.Students.AsQueryable();
+            if (sortBy == "Name")
+            {
+                students = context.GetStudentsSortedByName();
+            }
+            else if (sortBy == "Age")
+            {
+                students = context.GetStudentsSortedByAge();
+            }
+            else if (!string.IsNullOrEmpty(gender))
+            {
+                students = context.GetStudentsSortedByGender(gender);
+            }
+            else if (dobFrom.HasValue && dobTo.HasValue)
+            {
+                students = context.GetStudentsSortedByDate(dobFrom.Value, dobTo.Value); 
+            }
+            else
+            {
+                students = context.Students.ToList();
+            }
 
             if (!string.IsNullOrEmpty(searchString))
             {
-                students = students.Where(s => s.Name.Contains(searchString) || s.Email.Contains(searchString));
+                students = students
+                    .Where(s => s.Name.Contains(searchString) || s.Email.Contains(searchString))
+                    .ToList();
             }
 
-            //var students = context.Students.ToList();
-
-            return View(students.ToList());
+            return View(students);
         }
 
 
