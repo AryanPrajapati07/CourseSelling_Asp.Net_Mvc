@@ -71,18 +71,23 @@ namespace Demo.Controllers
 
         public IActionResult Dashboard(string searchCourse)
         {
-            // Initialize the courses variable to avoid CS0165
+            
             List<Course> courses = context.Courses.ToList();
 
             if (!string.IsNullOrEmpty(searchCourse))
             {
-                // Correct the property names to match the Course class
+                
                 courses = courses
                     .Where(s => s.CourseTitle.Contains(searchCourse) || s.Instructor.Contains(searchCourse))
                     .ToList();
             }
 
             return View(courses);
+        }
+
+        public IActionResult Instructor()
+        {
+            return View();
         }
 
     }

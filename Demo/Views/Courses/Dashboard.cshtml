@@ -168,7 +168,7 @@
 	</style>
 </head>
 <body>
-	<form method="get" asp-controller="Students" asp-action="Index">
+	<form method="get" asp-controller="Courses" asp-action="Dashboard">
 		<div class="sidebar">
 			<div class="logo">
 				<div class="logo-icon">A</div>
@@ -190,7 +190,7 @@
 						</div>
 					</a>
 				</li>
-				<li >
+				<li>
 					<a href="/Students/Index" class="menu-link" style="text-decoration:none;color:inherit;">
 						<div class="menu-item">
 							<span class="menu-icon">👥</span>
@@ -199,10 +199,12 @@
 					</a>
 				</li>
 				<li>
+					<a href="/Courses/Instructor" class="menu-link" style="text-decoration:none;color:inherit;">
 					<div class="menu-item">
 						<span class="menu-icon">👨‍🏫</span>
 						<span>Instructors</span>
 					</div>
+					</a>
 				</li>
 				<li>
 					<div class="menu-item">
@@ -270,25 +272,34 @@
 						</tr>
 					</thead>
 
-					 <tbody> 
-					 	@foreach (var courses in Model) 
-					 	{ 
-					 		<tr>
-								<td>@($"CS250{courses.Id}")</td>
-								<td>@courses.CourseTitle</td>
-								<td>@courses.Category</td>
-								<td>@courses.Level</td>
-								<td>@courses.Instructor</td>
-								<td>@courses.Price</td>
-								<td>@courses.Hours</td>
-								<td style="white-space:nowrap">
-									<a class="btn btn-primary btn-sm" asp-controller="Courses" asp-action="Edit" asp-route-id="@courses.Id">Edit</a>
-									<a class="btn btn-primary btn-sm" asp-controller="Courses" asp-action="Delete" asp-route-id="@courses.Id">Delete</a>
-								</td> 
+					<tbody>
+						@if (Model != null && Model.Any())
+						{
+							@foreach (var courses in Model)
+							{
+								<tr>
+									<td>@($"CS250{courses.Id}")</td>
+									<td>@courses.CourseTitle</td>
+									<td>@courses.Category</td>
+									<td>@courses.Level</td>
+									<td>@courses.Instructor</td>
+									<td>@courses.Price</td>
+									<td>@courses.Hours</td>
+									<td style="white-space:nowrap">
+										<a class="btn btn-primary btn-sm" asp-controller="Courses" asp-action="Edit" asp-route-id="@courses.Id">Edit</a>
+										<a class="btn btn-primary btn-sm" asp-controller="Courses" asp-action="Delete" asp-route-id="@courses.Id">Delete</a>
+									</td>
 
-					 		</tr> 
-					 	} 
-					 </tbody> 
+								</tr>
+							}
+						}
+						else
+						{
+							<tr>
+								<td colspan="8" class="text-center text-muted">No Records found.</td>
+							</tr>
+						}
+					</tbody>
 				</table>
 			</div>
 		</div>

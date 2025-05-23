@@ -1,17 +1,9 @@
-﻿@model List<Student>
-
+﻿@model List<Course>
 @{
 
-
-	var searchTerm = Context.Request.Query.ContainsKey("searchString")
-		? Context.Request.Query["searchString"].ToString()
-		: "";
-
-	// var sortBy = Context.Request.Query.ContainsKey("sortBy") ? Context.Request.Query["sortBy"].ToString() : "";
-	var dobFrom = Context.Request.Query.ContainsKey("dobFrom") ? Context.Request.Query["dobFrom"].ToString() : "";
-	var dobTo = Context.Request.Query.ContainsKey("dobTo") ? Context.Request.Query["dobTo"].ToString() : "";
-
-
+	// var search = Context.Request.Query.ContainsKey("searchCourse")
+	// 	? Context.Request.Query["searchCourse"].ToString()
+	// 	: "";
 
 }
 
@@ -169,7 +161,6 @@
 		.form-container {
 			background-color: white;
 			border-radius: 8px;
-			width: 110%;
 			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 			padding: 30px;
 		}
@@ -177,7 +168,7 @@
 	</style>
 </head>
 <body>
-	<form method="get" asp-controller="Students" asp-action="Index">
+	<form method="get" asp-controller="Courses" asp-action="Dashboard">
 		<div class="sidebar">
 			<div class="logo">
 				<div class="logo-icon">A</div>
@@ -199,7 +190,7 @@
 						</div>
 					</a>
 				</li>
-				<li class="active">
+				<li>
 					<a href="/Students/Index" class="menu-link" style="text-decoration:none;color:inherit;">
 						<div class="menu-item">
 							<span class="menu-icon">👥</span>
@@ -207,12 +198,12 @@
 						</div>
 					</a>
 				</li>
-				<li>
+				<li class="active">
 					<a href="/Courses/Instructor" class="menu-link" style="text-decoration:none;color:inherit;">
-					<div class="menu-item">
-						<span class="menu-icon">👨‍🏫</span>
-						<span>Instructors</span>
-					</div>
+						<div class="menu-item">
+							<span class="menu-icon">👨‍🏫</span>
+							<span>Instructors</span>
+						</div>
 					</a>
 				</li>
 				<li>
@@ -240,122 +231,80 @@
 
 
 		<div class="main-content">
-			<div class="header d-flex justify-content-between align-items-center mb-4">
-				<h2 class="page-title">Add New Student</h2>
-				<div class="user-profile d-flex align-items-center">
-					<div class="user-avatar bg-primary text-white rounded-circle text-center me-2" style="width:40px; height:40px;">JD</div>
+			<div class="header">
+				<div class="page-title">List of Instructors</div>
+				<div class="user-profile">
+					<div class="user-avatar">JD</div>
 					<div class="user-info">
-						<div class="user-name fw-bold">John Doe</div>
-						<div class="user-role text-muted">Administrator</div>
+						<div class="user-name">John Doe</div>
+						<div class="user-role">Administrator</div>
 					</div>
 				</div>
 			</div>
 
 			<div class="form-container">
-				<div class="mb-4">
-					<a class="btn btn-success mb-3" asp-controller="Students" asp-action="Create">+ New Student</a>
 
-					<!-- Search & Filter Form -->
-
-					<div class="col-md-4">
-						<div class="input-group">
-							<input type="text" id="searchString" name="searchString" class="form-control" placeholder="Search by Name or Email..." value="@searchTerm" />
-							<button type="submit" class="btn btn-primary">Search</button>
-						</div>
+				<div class="row mb-5">
+					<div class="col">
+						<a class="btn btn-primary" asp-controller="Students" asp-action="AddCourse">+ Add New Instructor</a>
 					</div>
 
 
-					<div class="row g-3 align-items-end mt-3">
-						<div class="col-md-2">
-							<label for="sortBy" class="form-label">Sort By</label>
-							<select name="sortBy" id="sortBy" class="form-select">
-								<option value="">None</option>
-								<option value="Name">Name (A-Z)</option>
-								<option value="Age">Age (Youngest First)</option>
-							</select>
-						</div>
-
-						<div class="col-md-2">
-							<label for="gender" class="form-label">Gender</label>
-							<select name="gender" id="gender" class="form-select">
-								<option value="">All</option>
-								<option value="Male">Male</option>
-								<option value="Female">Female</option>
-							</select>
-						</div>
-
-						<div class="col-md-2">
-							<label for="dobFrom" class="form-label">DOB From</label>
-							<input type="date" name="dobFrom" id="dobFrom" class="form-control" value="@dobFrom" />
-						</div>
-
-						<div class="col-md-2">
-							<label for="dobTo" class="form-label">DOB To</label>
-							<input type="date" name="dobTo" id="dobTo" class="form-control" value="@dobTo" />
-						</div>
-
-						<div class="col-md-2 d-grid">
-							<button type="submit" class="btn btn-primary">Apply Filters</button>
-						</div>
-					</div>
-
-
+					@* <div class="input-group mt-3" style="width:950px;margin-right:100px;"> *@
+					@* 	<input type="text" name="searchCourse" class="form-control" placeholder="Search by Title..." value="@search" /> *@
+					@* 	<button type="submit" class="btn btn-primary">Search</button> *@
+					@* </div> *@
 				</div>
 
-				<!-- Student Table -->
-				<div class="table-responsive" style="width:100%;">
-					<table class="table table-bordered align-middle">
-						<thead class="table-light">
-							<tr>
-								<th>Id</th>
-								<th>Name</th>
-								<th>Email</th>
-								<th>Gender</th>
-								<th>Age</th>
-								<th>DOB</th>
-								<th>Country</th>
-								<th>State</th>
-								<th>Image</th>
-								<th>Action</th>
-							</tr>
-						</thead>
-						<tbody>
-							@if (Model != null && Model.Any())
-							{
-								foreach (var student in Model)
-								{
-									<tr>
-										<td>@student.Id</td>
-										<td>@student.Name</td>
-										<td>@student.Email</td>
-										<td>@student.Gender</td>
-										<td>@student.Age</td>
-										<td>@student.Dob.ToString("dd/MM/yyyy")</td>
-										<td>@student.Country</td>
-										<td>@student.State</td>
-										<td>
-											<img src="@student.ImageFileName" alt="@student.Name's photo" width="50" height="50" class="img-thumbnail" />
-										</td>
-										<td class="text-nowrap">
-											<a class="btn btn-sm btn-warning" asp-controller="Students" asp-action="Edit" asp-route-id="@student.Id">Edit</a>
-											<a class="btn btn-sm btn-danger" asp-controller="Students" asp-action="Delete" asp-route-id="@student.Id">Delete</a>
-										</td>
-									</tr>
-								}
-							}
-							else
-							{
-								<tr>
-									<td colspan="8" class="text-center text-muted">No Records found.</td>
-								</tr>
-							}
-						</tbody>
-					</table>
-				</div>
+
+				@* <table class="table"> *@
+				@* 	<thead> *@
+				@* 		<tr> *@
+				@* 			<th>Id</th> *@
+				@* 			<th>Course Title</th> *@
+				@* 			<th>Category</th> *@
+				@* 			<th>Level</th> *@
+				@* 			<th>Instructor</th> *@
+				@* 			<th>Price ($)</th> *@
+				@* 			<th>Duration in Hours</th> *@
+				@* 			<th>Action</th> *@
+
+				@* 		</tr> *@
+				@* 	</thead> *@
+
+				@* 	<tbody> *@
+				@* 		@if (Model != null && Model.Any()) *@
+				@* 		{ *@
+				@* 			@foreach (var courses in Model) *@
+				@* 			{ *@
+				@* 				<tr> *@
+				@* 					<td>@($"CS250{courses.Id}")</td> *@
+				@* 					<td>@courses.CourseTitle</td> *@
+				@* 					<td>@courses.Category</td> *@
+				@* 					<td>@courses.Level</td> *@
+				@* 					<td>@courses.Instructor</td> *@
+				@* 					<td>@courses.Price</td> *@
+				@* 					<td>@courses.Hours</td> *@
+				@* 					<td style="white-space:nowrap"> *@
+				@* 						<a class="btn btn-primary btn-sm" asp-controller="Courses" asp-action="Edit" asp-route-id="@courses.Id">Edit</a> *@
+				@* 						<a class="btn btn-primary btn-sm" asp-controller="Courses" asp-action="Delete" asp-route-id="@courses.Id">Delete</a> *@
+				@* 					</td> *@
+
+				@* 				</tr> *@
+				@* 			} *@
+				@* 		} *@
+				@* 		else *@
+				@* 		{ *@
+				@* 			<tr> *@
+				@* 				<td colspan="8" class="text-center text-muted">No Records found.</td> *@
+				@* 			</tr> *@
+				@* 		} *@
+				@* 	</tbody> *@
+				@* </table> *@
 			</div>
 		</div>
 
 	</form>
 
 </body>
-</html>
+
