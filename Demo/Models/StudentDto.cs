@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace Demo.Models
@@ -20,5 +21,14 @@ namespace Demo.Models
         public IFormFile ImageFile { get; set; }
 
         public string Age { get; set; }
+
+        [Required]
+        public string Country { get; set; }
+
+        [Required]
+        public string State { get; set; }
+
+        public List<SelectListItem> Countries { get; set; } = new();
+        public List<SelectListItem> States { get; set; } = new();
     }
 }

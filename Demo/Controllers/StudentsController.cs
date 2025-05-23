@@ -3,6 +3,7 @@ using Demo.Services;
 using MathNet.Numerics.Distributions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace Demo.Controllers
@@ -10,12 +11,23 @@ namespace Demo.Controllers
     public class StudentsController : Controller
     {
         private readonly ApplicationDbContext context;
-        //private readonly EmailService emailService;
+
+        //country and states data
+        private static readonly Dictionary<string, List<string>> CountryStates = new()
+        {
+            { "India", new List<string> { "Gujarat", "Maharashtra", "Karnataka", "Delhi" } },
+            { "USA", new List<string> { "California", "Texas", "Florida" } },
+            { "Canada", new List<string> { "Ontario", "Quebec", "British Columbia" } }
+
+        };
+
+        public List<SelectListItem> Countries { get; private set; }
+        public List<SelectListItem> States { get; private set; }
 
         public StudentsController(ApplicationDbContext context)
         {
             this.context = context;
-            //this.emailService = emailService;
+
         }
 
         //add dashboard page 
@@ -29,21 +41,10 @@ namespace Demo.Controllers
         {
             List<Student> students;
 
-            if (sortBy == "Name")
+            if (sortBy == "Name" || sortBy == "Age" || sortBy == "Gender" || sortBy == "Date" ||
+                !string.IsNullOrEmpty(gender) || (dobFrom.HasValue && dobTo.HasValue))
             {
-                students = context.GetStudentsSortedByName();
-            }
-            else if (sortBy == "Age")
-            {
-                students = context.GetStudentsSortedByAge();
-            }
-            else if (!string.IsNullOrEmpty(gender))
-            {
-                students = context.GetStudentsSortedByGender(gender);
-            }
-            else if (dobFrom.HasValue && dobTo.HasValue)
-            {
-                students = context.GetStudentsSortedByDate(dobFrom.Value, dobTo.Value); 
+                students = context.GetStudentsData(sortBy, gender, dobFrom, dobTo);
             }
             else
             {
@@ -62,10 +63,20 @@ namespace Demo.Controllers
 
 
         //Add Student Data
+        [HttpGet]
         public IActionResult Create()
         {
-
-            return View();
+            var model = new StudentDto
+            {
+                Countries = new List<SelectListItem>
+            {
+                new SelectListItem { Value = "India", Text = "India" },
+                new SelectListItem { Value = "USA", Text = "USA" },
+                new SelectListItem { Value = "Canada", Text = "Canada" }
+            },
+                States = new List<SelectListItem>()
+            };
+            return View(model);
         }
 
 
@@ -112,27 +123,16 @@ namespace Demo.Controllers
                     Gender = studentDto.Gender,
                     Dob = studentDto.DOB,
                     Age = studentDto.Age,
+                    Country = studentDto.Country,
+                    State = studentDto.State,
                     ImageFileName = "/images/" + fileName
+
                 };
 
                 context.Students.Add(student);
                 context.SaveChanges();
 
-                // Prepare email content
-                //string subject = "Welcome to the Student Portal";
-                //string body = $@"
-                //<h2>Welcome, {student.Name}!</h2>
-                //<p>Your registration is successful.</p>
-                //<ul>
-                //    <li>Email: {student.Email}</li>
-                //    <li>Gender: {student.Gender}</li>
-                //    <li>Date of Joining: {student.Dob:yyyy-MM-dd}</li>
-                //    <li>Age: {student.Age}</li>
-                //</ul>
-                //";
 
-                //// Send email
-                //await emailService.SendEmailAsync(student.Email, subject, body);
 
 
                 return RedirectToAction("Index", "Students");
@@ -142,6 +142,16 @@ namespace Demo.Controllers
 
                 return Content("Error: " + ex.Message);
             }
+        }
+
+        //Get states based on selected country
+        [HttpGet]
+        public JsonResult GetStates(string country)
+        {
+            var states = CountryStates.ContainsKey(country)
+                 ? CountryStates[country]
+                 : new List<string>();
+            return Json(states);
         }
 
 
@@ -239,12 +249,15 @@ namespace Demo.Controllers
             existingStudent.Gender = student.Gender;
             existingStudent.Dob = student.Dob;
             existingStudent.Age = student.Age;
+            //existingStudent.Country = student.Country;
+            //existingStudent.State = student.State;
 
             context.Students.Update(existingStudent);
             context.SaveChanges();
 
             return RedirectToAction(nameof(Index));
         }
+
 
 
 
@@ -301,7 +314,7 @@ namespace Demo.Controllers
             return View(courses);
         }
 
-        public IActionResult CourseDetails(int id) 
+        public IActionResult CourseDetails(int id)
         {
             var course = context.Courses.FirstOrDefault(c => c.Id == id);
             if (course == null) return NotFound();

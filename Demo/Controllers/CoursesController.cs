@@ -2,6 +2,7 @@
 using Demo.Models;
 using Demo.Services;
 using Microsoft.EntityFrameworkCore;
+using MathNet.Numerics.Distributions;
 
 namespace Demo.Controllers
 {
@@ -68,22 +69,20 @@ namespace Demo.Controllers
             return View(course);
         }
 
-        public IActionResult Dashboard(String searchCourse)
+        public IActionResult Dashboard(string searchCourse)
         {
-            
-            //var courses = context.Courses.ToList();
-            //return View(courses);
-
-            var courses = context.Courses.AsQueryable();
+            // Initialize the courses variable to avoid CS0165
+            List<Course> courses = context.Courses.ToList();
 
             if (!string.IsNullOrEmpty(searchCourse))
             {
-                courses = courses.Where(c => c.CourseTitle.Contains(searchCourse) || c.Level.Contains(searchCourse));
+                // Correct the property names to match the Course class
+                courses = courses
+                    .Where(s => s.CourseTitle.Contains(searchCourse) || s.Instructor.Contains(searchCourse))
+                    .ToList();
             }
 
-            
-
-            return View(courses.ToList());
+            return View(courses);
         }
 
     }

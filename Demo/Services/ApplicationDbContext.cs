@@ -18,26 +18,15 @@ namespace Demo.Services
         public DbSet<Course> Courses { get; set; }
 
 
-        public List<Student> GetStudentsSortedByName()
+
+        public List<Student> GetStudentsData(String sortBy = null, String gender = null, DateTime? dobFrom = null, DateTime? dobTo = null)
         {
-            return Students.FromSqlRaw("EXEC GetStudentsSortedByName").ToList();
-        }
-
-        public List<Student> GetStudentsSortedByAge()
-        {
-            return Students.FromSqlRaw("EXEC GetStudentsSortedByAge").ToList();
-        }
-
-        public List<Student> GetStudentsSortedByGender(string gender)
-        {
-            return Students.FromSqlInterpolated($"EXEC GetStudentsSortedByGender @Gender = {gender}").ToList();
-        }
-
-        public List<Student> GetStudentsSortedByDate(DateTime dobFrom, DateTime dobTo)
-        {
-
-            return Students.FromSqlInterpolated($"EXEC GetStudentsSortedByDate @DobFrom = {dobFrom}, @DobTo = {dobTo}").ToList();
-
+            return Students.FromSqlInterpolated($@"
+                    EXEC GetStudentsData
+                        @SortBy = {sortBy},
+                        @Gender = {gender},
+                        @DobFrom = {dobFrom},
+                        @DobTo = {dobTo}").ToList();
         }
 
 

@@ -64,6 +64,27 @@
                 </div>
             </div>
 
+            <div class="row mb-3">
+                <label class="col-sm-4 col-form-label">Country</label>
+                <div class="col-sm-8">
+                    <select class="form-select" asp-for="Country" asp-items="Model.Countries" id="countryDropdown">
+                        <option value="">Select Country</option>
+                    </select>
+                    <span asp-validation-for="Country" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <label class="col-sm-4 col-form-label">State</label>
+                <div class="col-sm-8">
+                    <select class="form-select" asp-for="State" id="stateDropdown">
+                        <option value="">Select State</option>
+                    </select>
+                    <span asp-validation-for="State" class="text-danger"></span>
+                </div>
+            </div>
+
+
             <div class="row">
                 <div class="offset-sm-4 col-sm-4 d-grid">
                     <button type="submit" class="btn btn-primary">Submit</button>
@@ -77,7 +98,22 @@
 </form>
 
 
-
 @section Scripts {
+
     <partial name="_ValidationScriptsPartial" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $('#countryDropdown').change(function () {
+            var country = $(this).val();
+            $('#stateDropdown').empty().append('<option value="">Select State</option>');
+            if (country) {
+                $.getJSON('@Url.Action("GetStates", "Students")', { country: country }, function (states) {
+                    $.each(states, function (i, state) {
+                        $('#stateDropdown').append($('<option>', { value: state, text: state }));
+                    });
+                });
+            }
+        });
+    </script>
 }
+

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using MathNet.Numerics;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Demo.Models
 {
@@ -24,6 +25,15 @@ namespace Demo.Models
 
         public string Age { get; set; }
 
+        [MaxLength(100),Required]
+        public string Country { get; set; }
+
+        
+        [MaxLength(100), Required]
+        public string State { get; set; }
+
+        //public List<SelectListItem> States { get; set; }
+        //public List<SelectListItem> Countries { get; set; }
 
     }
 }
