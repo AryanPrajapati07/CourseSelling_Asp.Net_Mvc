@@ -16,6 +16,9 @@ namespace Demo.Controllers
         public IActionResult Index()
         {
 
+            List<Instructor> instructors = context.Instructors.ToList();
+
+
             return View();
         }
 
@@ -29,6 +32,15 @@ namespace Demo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(Instructor instructor)
         {
+
+            // Get all selected specializations from the form
+            var selectedSpecializations = Request.Form["Specialization"];
+            if (selectedSpecializations.Count > 0)
+            {
+                instructor.Specialization = string.Join(",", selectedSpecializations);
+            }
+
+
             if (ModelState.IsValid)
             {
                 // Handle image upload

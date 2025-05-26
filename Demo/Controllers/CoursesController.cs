@@ -22,14 +22,30 @@ namespace Demo.Controllers
         [HttpGet]
         public IActionResult Add()
         {
+
+
+            var instructors = context.Instructors
+               .Select(i => new
+                {
+                
+                Name = i.FirstName + " " + i.LastName
+                })
+                .ToList();
+
+            ViewBag.Instructors = instructors;
+
+
+
             return View();
         }
+
 
         // POST: Courses/Add
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(Course course)
         {
+
             if (ModelState.IsValid)
             {
                 // Handle image upload
@@ -64,25 +80,39 @@ namespace Demo.Controllers
 
                 context.Courses.Add(course);
                 await context.SaveChangesAsync();
-                return RedirectToAction("AddCourse","Students");
+                return RedirectToAction("AddCourse", "Students");
             }
+
+
+            //// Repopulate instructors for redisplay
+            //ViewBag.Instructors = context.Instructors
+            //    .Select(i => new
+            //    {
+            //        Id = i.Id,
+            //        Name = i.FirstName + " " + i.LastName
+            //    })
+            //    .ToList();
+
             return View(course);
+
+
         }
 
         public IActionResult Dashboard(string searchCourse)
         {
-            
+
             List<Course> courses = context.Courses.ToList();
 
             if (!string.IsNullOrEmpty(searchCourse))
             {
-                
+
                 courses = courses
                     .Where(s => s.CourseTitle.Contains(searchCourse) || s.Instructor.Contains(searchCourse))
                     .ToList();
             }
 
             return View(courses);
+            
         }
 
         public IActionResult Instructor()
