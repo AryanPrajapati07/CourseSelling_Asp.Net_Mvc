@@ -17,6 +17,8 @@ namespace Demo.Services
         public DbSet<Student> Students { get; set; }
         public DbSet<Course> Courses { get; set; }
 
+        public DbSet<Instructor> Instructors { get; set; }
+
 
 
         public List<Student> GetStudentsData(String sortBy = null, String gender = null, DateTime? dobFrom = null, DateTime? dobTo = null)
