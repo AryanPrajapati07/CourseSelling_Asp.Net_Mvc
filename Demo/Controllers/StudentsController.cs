@@ -1,10 +1,12 @@
 ﻿using Demo.Models;
 using Demo.Services;
-using MathNet.Numerics.Distributions;
+using Intuit.Ipp.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
+using Razorpay.Api;
+
+
 
 namespace Demo.Controllers
 {
@@ -320,6 +322,29 @@ namespace Demo.Controllers
             if (course == null) return NotFound();
             return View(course);
         }
+
+
+
+
+        // Updated Profile method to fix CS0021 error
+        public IActionResult Profile()
+        {
+            var email = TempData["StudentEmail"] as string;
+            if (string.IsNullOrEmpty(email))
+                return RedirectToAction("StudentLogin");
+
+            var student = context.Students.FirstOrDefault(s => s.Email == email);
+            if (student == null)
+                return NotFound();
+
+            // Fetch payment from Razorpay
+          
+
+            TempData.Keep("StudentEmail");
+            return View(student);
+        }
+
+
 
     }
 }

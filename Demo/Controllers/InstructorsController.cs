@@ -1,69 +1,54 @@
-﻿using Demo.Models;
+﻿using System.Data;
+using Demo.Models;
 using Demo.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 
 namespace Demo.Controllers
 {
     public class InstructorsController : Controller
     {
-
         private readonly ApplicationDbContext context;
-        public InstructorsController(ApplicationDbContext context)
+        private readonly IConfiguration _configuration; // Change type from object to IConfiguration
+
+        public InstructorsController(ApplicationDbContext context, IConfiguration configuration) // Add IConfiguration to constructor
         {
             this.context = context;
-
-        }
-        public IActionResult Index()
-        {
-
-            List<Instructor> instructors = context.Instructors.ToList();
-
-
-            return View();
+            this._configuration = configuration; // Assign the injected configuration
         }
 
-        [HttpGet]
-        public IActionResult Add()
+        public List<Instructor> GetInstructors()
         {
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Add(Instructor instructor)
-        {
-
-            // Get all selected specializations from the form
-            var selectedSpecializations = Request.Form["Specialization"];
-            if (selectedSpecializations.Count > 0)
+            var instructors = new List<Instructor>();
+            using (var connection = new SqlConnection(_configuration.GetConnectionString("DefaultConnection"))) // Fix type issue
             {
-                instructor.Specialization = string.Join(",", selectedSpecializations);
-            }
-
-
-            if (ModelState.IsValid)
-            {
-                // Handle image upload
-                if (instructor.Profile != null && instructor.Profile.Length > 0)
+                using (var command = new SqlCommand("GetAllInstructors", connection))
                 {
-                    var imageFileName = Guid.NewGuid() + Path.GetExtension(instructor.Profile.FileName);
-                    var imagePath = Path.Combine("wwwroot/uploads/images", imageFileName);
-
-                    Directory.CreateDirectory(Path.GetDirectoryName(imagePath)!);
-
-                    using (var stream = new FileStream(imagePath, FileMode.Create))
+                    command.CommandType = CommandType.StoredProcedure;
+                    connection.Open();
+                    using (var reader = command.ExecuteReader())
                     {
-                        await instructor.Profile.CopyToAsync(stream);
-                    }   
-                    instructor.ProfilePath = "/uploads/images/" + imageFileName;
-                }
+                        while (reader.Read())
+                        {
+                            instructors.Add(new Instructor
+                            {
+                                Id = (int)reader["Id"],
+                                FirstName = reader["FirstName"].ToString(),
+                                LastName = reader["LastName"].ToString(),
+                                Email = reader["Email"].ToString(),
+                                Phone = reader["Phone"].ToString(),
+                                Department = reader["Department"].ToString(),
+                                Position = reader["Position"].ToString(),
+                                Experience = reader["Experience"].ToString(),
+                                Availability = reader["Availability"].ToString()
 
-               
-                context.Instructors.Add(instructor);
-                await context.SaveChangesAsync();
-                return RedirectToAction("Instructor", "Courses");
+
+                            });
+                        }
+                    }
+                }
             }
-            return View(instructor);
+            return instructors;
         }
     }
 }

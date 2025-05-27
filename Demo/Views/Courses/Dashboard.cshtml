@@ -305,6 +305,48 @@
 		</div>
 
 
+		@if (ViewBag.Instructors != null)
+		{
+			<div class="form-container" style="margin-left:270px;;">
+			<h3>Instructors</h3>
+			<table class="table" >
+				<thead>
+					<tr>
+						<th>Id</th>
+						<th>FirstName</th>
+						<th>LastName</th>
+						<th>Email</th>
+						<th>Phone</th>
+						<th>Department</th>
+						<th>Position</th>
+						<th>Experience</th>
+						<th>Availability</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var instructor in (List<Instructor>)ViewBag.Instructors)
+					{
+						<tr>
+							<td>@instructor.Id</td>
+							<td>@instructor.FirstName</td>
+							<td>@instructor.LastName</td>
+							<td>@instructor.Email</td>
+							<td>@instructor.Phone</td>
+							<td>@instructor.Department</td>
+							<td>@instructor.Position</td>
+							<td>@instructor.Experience</td>
+							<td>@instructor.Availability</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+			</div>
+		}
+
+
+
+
+
 
 	</form>
 

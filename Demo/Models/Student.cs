@@ -32,6 +32,10 @@ namespace Demo.Models
         [MaxLength(100), Required]
         public string State { get; set; }
 
+        //[MaxLength(100)]
+        //public string RazorpayPaymentId { get; set; }
+        //public decimal? PaymentAmount { get; set; }
+
         //public List<SelectListItem> States { get; set; }
         //public List<SelectListItem> Countries { get; set; }
 

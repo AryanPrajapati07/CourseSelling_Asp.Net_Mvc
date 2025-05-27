@@ -457,14 +457,18 @@
                         <div class="custom-select">
                             <select class="form-control" asp-for="Instructor" id="course-instructor">
                                 <option value="">Select instructor</option>
-                                @if (ViewBag.Instructors != null)
-                                {
-                                    @foreach (dynamic instructor in ViewBag.Instructors)
-                                    {
-                                        <option value="@instructor.Id">@instructor.FirstName @instructor.LastName</option>
-                                    }
+                                <option value="John">John</option>
+                                <option value="Jessica">Jessica</option>
+                                <option value="Brock">Brock</option>
+                                <option value="Edger">Edger</option>
+                                @* @if (ViewBag.Instructors != null) *@
+                                @* { *@
+                                @*     @foreach (dynamic instructor in ViewBag.Instructors) *@
+                                @*     { *@
+                                @*         <option value="@instructor.Id">@instructor.FirstName @instructor.LastName</option> *@
+                                @*     } *@
 
-                                }
+                                @* } *@
 
                             </select>
                             <span asp-validation-for="Instructor"></span>

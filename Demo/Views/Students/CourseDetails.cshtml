@@ -214,7 +214,49 @@
         <div class="section-title">What You Will Learn</div>
         <div class="info-box">@Model.WhatLearn</div>
 
-        <a href="#" class="enroll-button">Enroll Now for ₹@Model.Price</a>
+        @* <a href="#" class="enroll-button">Enroll Now for ₹@Model.Price</a> *@
+
+        <button id="enrollBtn" class="enroll-button" type="button">
+            Enroll Now for ₹@Model.Price
+        </button>
+
+
+        @* RAZORPAY_KEY = 'rzp_test_kLX7L8BYDbH8a2' *@
+        @* RAZORPAY_SECRET = 'bqFMooSdJGjmiE7JagpU9YZS' *@
+
+
     </div>
 </body>
 </html>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.getElementById('enrollBtn').onclick = function (e) {
+        e.preventDefault();
+
+        var options = {
+            "key": "rzp_test_kLX7L8BYDbH8a2", // Enter the Key ID generated from the Dashboard
+            "amount": @((int)(Model.Price * 100)), // Amount is in currency subunits. Default is INR. Hence, 100 refers to 100 paise
+            "currency": "INR",
+            "name": "@Model.CourseTitle",
+            "description": "Course Enrollment",
+            "image": "@Url.Content($"~{Model.ImagePath}")",
+            // "order_id": "order_9A33XWu170gUtm", // Pass the order_id if you generate orders from backend
+            "handler": function (response){
+                alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+                // TODO: Send payment info to server for verification and enrollment
+            },
+            "prefill": {
+                "name": "",
+                "email": "",
+                "contact": ""
+            },
+            "theme": {
+                "color": "#4f46e5"
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    }
+</script>
+
+

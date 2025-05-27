@@ -776,67 +776,67 @@
 
 
 				@* ------------------------------------------------------------------------------------------------ *@
-				<form id="instructorForm" asp-controller="Instructors" asp-action="Add" method="Get" enctype="multipart/form-data">
+			@* 	<form id="instructorForm" asp-controller="Instructors" asp-action="Add" method="Get" enctype="multipart/form-data"> *@
 
-				<div class="form-container">
+			@* 	<div class="form-container"> *@
 
-					<div class="row mb-5">
-						<div class="col">
-							<a class="btn btn-primary" asp-controller="Instructors" asp-action="Instructor">Instructors Details</a>
-						</div>
-
-
-
-					</div>
+			@* 		<div class="row mb-5"> *@
+			@* 			<div class="col"> *@
+			@* 				<a class="btn btn-primary" asp-controller="Instructors" asp-action="Instructor">Instructors Details</a> *@
+			@* 			</div> *@
 
 
-					<table class="table">
-						<thead>
-							<tr>
-								<th>Id</th>
-								<th>Name</th>
-								<th>Email</th>
-								<th>Phone</th>
-								<th>Address</th>
-								<th>Experience </th>
-								<th>Highest Degree</th>
-								<th>Action</th>
 
-							</tr>
-						</thead>
+			@* 		</div> *@
 
-						<tbody>
-							@if (Model != null && Model.Any())
-							{
-								@foreach (var instructors in Model)
-								{
-									<tr>
-										<td>@($"CS250{instructors.Id}")</td>
-										<td>@instructors.FirstName</td>
-										<td>@instructors.Email</td>
-										<td>@instructors.Phone</td>
-										<td>@instructors.Address</td>
-										<td>@instructors.Experience</td>
-										<td>@instructors.HighestDegree</td>
-										<td style="white-space:nowrap">
-											<a class="btn btn-primary btn-sm" asp-controller="Courses" asp-action="Edit" asp-route-id="@instructors.Id">Edit</a>
-											<a class="btn btn-primary btn-sm" asp-controller="Courses" asp-action="Delete" asp-route-id="@instructors.Id">Delete</a>
-										</td>
 
-									</tr>
-								}
-							}
-							else
-							{
-								<tr>
-									<td colspan="8" class="text-center text-muted">No Records found.</td>
-								</tr>
-							}
-						</tbody>
-					</table>
-				</div>
-			</div>
-			</form>
+			@* 		<table class="table"> *@
+			@* 			<thead> *@
+			@* 				<tr> *@
+			@* 					<th>Id</th> *@
+			@* 					<th>Name</th> *@
+			@* 					<th>Email</th> *@
+			@* 					<th>Phone</th> *@
+			@* 					<th>Address</th> *@
+			@* 					<th>Experience </th> *@
+			@* 					<th>Highest Degree</th> *@
+			@* 					<th>Action</th> *@
+
+			@* 				</tr> *@
+			@* 			</thead> *@
+
+			@* 			<tbody> *@
+			@* 				@if (Model != null && Model.Any()) *@
+			@* 				{ *@
+			@* 					@foreach (var instructors in Model) *@
+			@* 					{ *@
+			@* 						<tr> *@
+			@* 							<td>@($"CS250{instructors.Id}")</td> *@
+			@* 							<td>@instructors.FirstName</td> *@
+			@* 							<td>@instructors.Email</td> *@
+			@* 							<td>@instructors.Phone</td> *@
+			@* 							<td>@instructors.Address</td> *@
+			@* 							<td>@instructors.Experience</td> *@
+			@* 							<td>@instructors.HighestDegree</td> *@
+			@* 							<td style="white-space:nowrap"> *@
+			@* 								<a class="btn btn-primary btn-sm" asp-controller="Courses" asp-action="Edit" asp-route-id="@instructors.Id">Edit</a> *@
+			@* 								<a class="btn btn-primary btn-sm" asp-controller="Courses" asp-action="Delete" asp-route-id="@instructors.Id">Delete</a> *@
+			@* 							</td> *@
+
+			@* 						</tr> *@
+			@* 					} *@
+			@* 				} *@
+			@* 				else *@
+			@* 				{ *@
+			@* 					<tr> *@
+			@* 						<td colspan="8" class="text-center text-muted">No Records found.</td> *@
+			@* 					</tr> *@
+			@* 				} *@
+			@* 			</tbody> *@
+			@* 		</table> *@
+			@* 	</div> *@
+			@* </div> *@
+			@* </form> *@
 
 
 

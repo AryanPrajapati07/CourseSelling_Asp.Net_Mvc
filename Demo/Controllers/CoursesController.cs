@@ -93,10 +93,15 @@ namespace Demo.Controllers
             //    })
             //    .ToList();
 
+            //ViewBag.Instructors = context.Instructors.ToList();
+
+
             return View(course);
 
 
         }
+
+        
 
         public IActionResult Dashboard(string searchCourse)
         {
@@ -111,14 +116,25 @@ namespace Demo.Controllers
                     .ToList();
             }
 
+
+            var instructors = GetInstructors();
+            ViewBag.Instructors = instructors;
+
             return View(courses);
             
         }
+
+        
 
         public IActionResult Instructor()
         {
             return View();
         }
+        private List<Instructor> GetInstructors()
+        {
+            return context.Instructors.ToList();
+        }
+
 
     }
 

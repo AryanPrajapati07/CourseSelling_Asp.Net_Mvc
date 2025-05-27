@@ -1,0 +1,44 @@
+﻿@model Demo.Models.Student
+
+@{
+    ViewData["Title"] = "Student Profile";
+}
+
+@if (ViewBag.PaymentDebug != null)
+{
+    <div style="color:red">@ViewBag.PaymentDebug</div>
+}
+
+
+<h2>Student Profile</h2>
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <td>@Model.Name</td>
+    </tr>
+    <tr>
+        <th>Age</th>
+        <td>@Model.Age</td>
+    </tr>
+    <tr>
+        <th>Email</th>
+        <td>@Model.Email</td>
+    </tr>
+    <tr>
+        <th>Country</th>
+        <td>@Model.Country</td>
+    </tr>
+    <tr>
+        <th>State</th>
+        <td>@Model.State</td>
+    </tr>
+    @* <tr> *@
+    @*     <th>Razorpay Payment ID</th> *@
+    @*     <td>@(string.IsNullOrEmpty(Model.RazorpayPaymentId) ? "N/A" : Model.RazorpayPaymentId)</td> *@
+    @* </tr> *@
+    @* <tr> *@
+    @*     <th>Payment Amount</th> *@
+    @*     <td>@(Model.PaymentAmount.HasValue ? Model.PaymentAmount.Value.ToString("C") : "N/A")</td> *@
+    @* </tr> *@
+</table>
+
