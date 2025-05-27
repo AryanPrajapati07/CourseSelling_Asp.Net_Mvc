@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Razorpay.Api;
+using System.Net;
+using System.Net.Mail;
+
 
 
 
@@ -262,6 +265,46 @@ namespace Demo.Controllers
 
 
 
+        //OTP logic
+        private string GenerateOtp(int length = 6)
+        {
+            var random = new Random();
+            string otp = "";
+            for (int i = 0; i < length; i++)
+                otp += random.Next(0, 10).ToString();
+            return otp;
+        }
+        private void SendOtpEmail(string email, string otp)
+        {
+            
+            System.Diagnostics.Debug.WriteLine($"Send OTP {otp} to {email}");
+
+
+            var fromAddress = new MailAddress("aryanprajapati5523@gmail.com", "EduMaster");
+            var toAddress = new MailAddress(email);
+            const string fromPassword = "bojvatecoqvsxjds"; // Use App Password, not your Gmail password
+            const string subject = "Your OTP Code";
+            string body = $"Your OTP is: {otp}";
+
+            var smtp = new SmtpClient
+            {
+                Host = "smtp.gmail.com",
+                Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
+            };
+            using (var message = new MailMessage(fromAddress, toAddress)
+            {
+                Subject = subject,
+                Body = body
+            })
+            {
+                smtp.Send(message);
+            }
+        }
+
 
 
         //STUDENT LOGIN
@@ -299,8 +342,54 @@ namespace Demo.Controllers
 
             TempData["StudentEmail"] = student.Email;
 
-            return RedirectToAction(nameof(StudentHome));
+            // Generate OTP
+            string otp = GenerateOtp();
+            TempData["StudentOtp"] = otp;
+            TempData["StudentEmail"] = Email;
+
+            // Send OTP via email (replace with your email sending logic)
+            SendOtpEmail(Email, otp);
+
+            // Redirect to OTP verification page
+            return RedirectToAction("VerifyOtp");
         }
+
+        //otp verification logic
+        [HttpGet]
+        public IActionResult VerifyOtp()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult VerifyOtp(string enteredOtp)
+        {
+            var storedOtp = TempData["StudentOtp"] as string;
+            var email = TempData["StudentEmail"] as string;
+
+            if (storedOtp == null || email == null)
+            {
+                ModelState.AddModelError("", "Session expired. Please login again.");
+                return RedirectToAction("StudentLogin");
+            }
+
+            if (enteredOtp == storedOtp)
+            {
+                // OTP is correct, proceed to student home
+                TempData["StudentEmail"] = email; // Keep for next request
+                return RedirectToAction(nameof(StudentHome));
+            }
+            else
+            {
+                ModelState.AddModelError("", "Invalid OTP. Please try again.");
+                TempData["StudentOtp"] = storedOtp; // Keep OTP for retry
+                TempData["StudentEmail"] = email;
+                return View();
+            }
+        }
+
+
 
         //student home page
         public IActionResult StudentHome()
@@ -324,8 +413,6 @@ namespace Demo.Controllers
         }
 
 
-
-
         // Updated Profile method to fix CS0021 error
         public IActionResult Profile()
         {
@@ -338,7 +425,7 @@ namespace Demo.Controllers
                 return NotFound();
 
             // Fetch payment from Razorpay
-          
+
 
             TempData.Keep("StudentEmail");
             return View(student);
