@@ -1,12 +1,9 @@
-﻿using Demo.Models;
-using Demo.Services;
-using Intuit.Ipp.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Razor;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Razorpay.Api;
-using System.Net;
+﻿using System.Net;
 using System.Net.Mail;
+using Demo.Models;
+using Demo.Services;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 
 
@@ -276,7 +273,7 @@ namespace Demo.Controllers
         }
         private void SendOtpEmail(string email, string otp)
         {
-            
+
             System.Diagnostics.Debug.WriteLine($"Send OTP {otp} to {email}");
 
 
