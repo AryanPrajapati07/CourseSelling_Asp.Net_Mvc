@@ -4,6 +4,7 @@ using Demo.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Demo.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250528090249_AddInvoicePathToStudent")]
+    partial class AddInvoicePathToStudent
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -76,45 +79,6 @@ namespace Demo.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Courses");
-                });
-
-            modelBuilder.Entity("Demo.Models.Enrollment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<decimal>("Amount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("InvoicePath")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("PaymentId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StudentEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("StudentId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StudentId");
-
-                    b.ToTable("Enrollments");
                 });
 
             modelBuilder.Entity("Demo.Models.Instructor", b =>
@@ -250,20 +214,6 @@ namespace Demo.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Students");
-                });
-
-            modelBuilder.Entity("Demo.Models.Enrollment", b =>
-                {
-                    b.HasOne("Demo.Models.Student", "Student")
-                        .WithMany("Enrollments")
-                        .HasForeignKey("StudentId");
-
-                    b.Navigation("Student");
-                });
-
-            modelBuilder.Entity("Demo.Models.Student", b =>
-                {
-                    b.Navigation("Enrollments");
                 });
 #pragma warning restore 612, 618
         }

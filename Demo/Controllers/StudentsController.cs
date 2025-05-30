@@ -4,6 +4,7 @@ using Demo.Models;
 using Demo.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 
 
@@ -13,6 +14,7 @@ namespace Demo.Controllers
     public class StudentsController : Controller
     {
         private readonly ApplicationDbContext context;
+        private readonly InvoiceService invoiceService;
 
         //country and states data
         private static readonly Dictionary<string, List<string>> CountryStates = new()
@@ -22,14 +24,15 @@ namespace Demo.Controllers
             { "Canada", new List<string> { "Ontario", "Quebec", "British Columbia" } }
 
         };
+       
 
         public List<SelectListItem> Countries { get; private set; }
         public List<SelectListItem> States { get; private set; }
 
-        public StudentsController(ApplicationDbContext context)
+        public StudentsController(ApplicationDbContext context, InvoiceService invoiceService)
         {
             this.context = context;
-
+            this.invoiceService = invoiceService;
         }
 
         //add dashboard page 
@@ -374,7 +377,7 @@ namespace Demo.Controllers
             if (enteredOtp == storedOtp)
             {
                 // OTP is correct, proceed to student home
-                TempData["StudentEmail"] = email; // Keep for next request
+                HttpContext.Session.SetString("StudentEmail", email);
                 return RedirectToAction(nameof(StudentHome));
             }
             else
@@ -405,7 +408,17 @@ namespace Demo.Controllers
         public IActionResult CourseDetails(int id)
         {
             var course = context.Courses.FirstOrDefault(c => c.Id == id);
-            if (course == null) return NotFound();
+
+            var student = context.Students.FirstOrDefault(s => s.Email == User.Identity.Name);
+           
+
+            ViewBag.StudentName = student?.Name;
+            ViewBag.StudentEmail = student?.Email;
+            ViewBag.StudentCountry = student?.Country;
+            ViewBag.StudentState = student?.State;
+
+
+            
             return View(course);
         }
 
@@ -413,7 +426,7 @@ namespace Demo.Controllers
         // Updated Profile method to fix CS0021 error
         public IActionResult Profile()
         {
-            var email = TempData["StudentEmail"] as string;
+            var email = HttpContext.Session.GetString("StudentEmail");
             if (string.IsNullOrEmpty(email))
                 return RedirectToAction("StudentLogin");
 
@@ -421,11 +434,162 @@ namespace Demo.Controllers
             if (student == null)
                 return NotFound();
 
-            // Fetch payment from Razorpay
+            var enrollments = (from e in context.Enrollments
+                               join c in context.Courses on e.CourseId equals c.Id
+                               join s in context.Students on e.StudentEmail equals s.Email
+                               where s.Email == email
+                               select new
+                               {
+                                   Enrollment = new
+                                   {
+                                       e.CourseId,
+                                       e.PaymentId,
+                                       e.Amount,
+                                       e.PaymentDate,
+                                       e.InvoicePath
+                                   },
+                                   Course = new
+                                   {
+                                       c.CourseTitle,
+                                       c.Hours,
+                                       c.Instructor
+                                   },
+                                   Student = new
+                                   {
+                                       s.Name,
+                                       s.Email
+                                   }
+                               }).ToList();
 
+            ViewBag.Enrollments = enrollments;
 
-            TempData.Keep("StudentEmail");
             return View(student);
+        }
+
+
+        //Generate Invoice 
+        public async Task<IActionResult> PaymentSuccess(string paymentId, decimal amount, int courseId)
+        {
+            var email = HttpContext.Session.GetString("StudentEmail");
+            if (string.IsNullOrEmpty(email))
+                return RedirectToAction("StudentLogin");
+
+            var course = context.Courses.FirstOrDefault(c => c.Id == courseId);
+            var student = context.Students.FirstOrDefault(s => s.Email == email);
+
+            if (course == null || student == null)
+                return NotFound();
+
+            // Generate the invoice PDF
+            var pdfBytes = invoiceService.GenerateInvoice(
+                paymentId,
+                amount,
+                course.CourseTitle,
+                course.Hours,
+                course.Instructor,
+                student.Name,
+                student.Email
+            );
+
+            // Save the PDF to wwwroot/invoices
+            var invoiceFileName = $"invoice_{paymentId}.pdf";
+            var invoicePath = Path.Combine("wwwroot", "invoices", invoiceFileName);
+            Directory.CreateDirectory(Path.GetDirectoryName(invoicePath));
+            await System.IO.File.WriteAllBytesAsync(invoicePath, pdfBytes);
+
+            // Optionally, store the invoice path in the student record
+            var enrollment = new Enrollment
+            {
+                StudentEmail = student.Email,
+                CourseId = course.Id,
+                PaymentId = paymentId,
+                Amount = amount,
+                PaymentDate = DateTime.Now,
+                InvoicePath = $"/invoices/{invoiceFileName}"
+            };
+
+            context.Enrollments.Add(enrollment);
+            context.SaveChanges();
+
+
+            // Optionally, return the PDF as a download
+            // return File(pdfBytes, "application/pdf", invoiceFileName);
+
+            // Or redirect to a profile or invoice page
+            return RedirectToAction("Profile");
+        }
+
+        public IActionResult DownloadInvoice(string paymentId)
+        {
+            var email = HttpContext.Session.GetString("StudentEmail");
+            if (string.IsNullOrEmpty(email))
+                return RedirectToAction("StudentLogin");
+
+            var enrollment = context.Enrollments
+                .FirstOrDefault(e => e.PaymentId == paymentId && e.StudentEmail == email);
+
+            if (enrollment == null || string.IsNullOrEmpty(enrollment.InvoicePath))
+                return NotFound("Invoice not found.");
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", enrollment.InvoicePath.TrimStart('/'));
+            if (!System.IO.File.Exists(filePath))
+                return NotFound("Invoice file not found.");
+
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            var fileName = Path.GetFileName(filePath);
+            return File(fileBytes, "application/pdf", fileName);
+        }
+
+
+
+
+
+        [HttpPost]
+        public IActionResult Enroll([FromBody] EnrollmentDto dto)
+        {
+            var email = HttpContext.Session.GetString("StudentEmail");
+            if (string.IsNullOrEmpty(email))
+            {
+                return Json(new { success = false, message = "Session expired. Please log in again." });
+            }
+
+           
+            try
+            {
+                var enrollment = new Enrollment
+                {
+                    StudentEmail = email,
+                    CourseId = dto.CourseId,
+                    PaymentId = dto.PaymentId,
+                    Amount = dto.Amount,
+                    PaymentDate = dto.PaymentDate
+                };
+
+               
+
+
+                context.Enrollments.Add(enrollment);
+                context.SaveChanges(); //  This line causes the error
+
+                return Json(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                // Log full inner exception to identify the real problem
+                var errorMessage = ex.InnerException?.Message ?? ex.Message;
+                return Json(new { success = false, message = "DB Error: " + errorMessage });
+            }
+        }
+
+
+
+
+        public class EnrollmentDto
+        {
+            public int CourseId { get; set; }
+            public string PaymentId { get; set; }
+            public decimal Amount { get; set; }
+            public DateTime PaymentDate { get; set; }
         }
 
 

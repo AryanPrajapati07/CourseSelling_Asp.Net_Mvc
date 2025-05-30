@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using MathNet.Numerics;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Demo.Models;
 
 namespace Demo.Models
 {
@@ -38,6 +39,14 @@ namespace Demo.Models
 
         //public List<SelectListItem> States { get; set; }
         //public List<SelectListItem> Countries { get; set; }
+
+       
+            
+            public string? InvoicePath { get; set; }
+
+         public ICollection<Enrollment> Enrollments { get; set; }
+        
+
 
     }
 }

@@ -1,5 +1,9 @@
 ﻿@model Demo.Models.Student
 
+@{
+    var enrollments = ViewBag.Enrollments as IEnumerable<dynamic>;
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,6 +22,7 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
+            line-height: 1.6;
         }
 
         .container {
@@ -33,13 +38,34 @@
             margin-bottom: 30px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
+
+            .header::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+                transition: left 0.5s;
+            }
+
+            .header:hover::before {
+                left: 100%;
+            }
 
             .header h1 {
                 color: #2c3e50;
                 font-size: 2.5rem;
                 font-weight: 700;
                 margin-bottom: 10px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
             }
 
             .header .subtitle {
@@ -58,6 +84,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            animation: slideInDown 0.5s ease-out;
         }
 
             .debug-message::before {
@@ -79,7 +106,15 @@
             padding: 30px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
+
+            .profile-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            }
 
         .avatar-section {
             text-align: center;
@@ -98,7 +133,27 @@
             font-size: 3rem;
             font-weight: 700;
             box-shadow: 0 15px 30px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
         }
+
+            .avatar:hover {
+                transform: scale(1.05) rotate(5deg);
+                box-shadow: 0 20px 40px rgba(102, 126, 234, 0.4);
+            }
+
+            .avatar::after {
+                content: '';
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                width: 20px;
+                height: 20px;
+                background: #00b894;
+                border-radius: 50%;
+                border: 3px solid white;
+            }
 
         .student-name {
             font-size: 1.8rem;
@@ -111,6 +166,11 @@
             color: #7f8c8d;
             font-size: 1rem;
             margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 5px 10px;
+            border-radius: 8px;
+            display: inline-block;
         }
 
         .status-badge {
@@ -122,6 +182,7 @@
             font-size: 0.9rem;
             font-weight: 600;
             box-shadow: 0 5px 15px rgba(0, 184, 148, 0.3);
+            animation: pulse 2s infinite;
         }
 
         .info-section h3 {
@@ -132,11 +193,23 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            position: relative;
         }
 
             .info-section h3::before {
                 content: "📋";
                 font-size: 1.2rem;
+            }
+
+            .info-section h3::after {
+                content: '';
+                position: absolute;
+                bottom: -10px;
+                left: 0;
+                width: 50px;
+                height: 3px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                border-radius: 2px;
             }
 
         .info-grid {
@@ -147,12 +220,17 @@
         .info-item {
             display: flex;
             align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding: 15px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.02);
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
         }
 
-            .info-item:last-child {
-                border-bottom: none;
+            .info-item:hover {
+                background: rgba(0, 0, 0, 0.05);
+                border-left-color: #667eea;
+                transform: translateX(5px);
             }
 
         .info-icon {
@@ -164,23 +242,28 @@
             justify-content: center;
             margin-right: 15px;
             font-size: 1.2rem;
+            transition: transform 0.3s ease;
         }
 
-            .info-icon.name {
-                background: linear-gradient(135deg, #ff9ff3, #f368e0);
-            }
+        .info-item:hover .info-icon {
+            transform: scale(1.1);
+        }
 
-            .info-icon.age {
-                background: linear-gradient(135deg, #54a0ff, #2e86de);
-            }
+        .info-icon.name {
+            background: linear-gradient(135deg, #ff9ff3, #f368e0);
+        }
 
-            .info-icon.email {
-                background: linear-gradient(135deg, #5f27cd, #341f97);
-            }
+        .info-icon.age {
+            background: linear-gradient(135deg, #54a0ff, #2e86de);
+        }
 
-            .info-icon.location {
-                background: linear-gradient(135deg, #00d2d3, #01a3a4);
-            }
+        .info-icon.email {
+            background: linear-gradient(135deg, #5f27cd, #341f97);
+        }
+
+        .info-icon.location {
+            background: linear-gradient(135deg, #00d2d3, #01a3a4);
+        }
 
         .info-content {
             flex: 1;
@@ -191,6 +274,8 @@
             color: #7f8c8d;
             font-weight: 500;
             margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .info-value {
@@ -206,6 +291,7 @@
             padding: 30px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 30px;
         }
 
             .actions-section h3 {
@@ -216,11 +302,23 @@
                 display: flex;
                 align-items: center;
                 gap: 10px;
+                position: relative;
             }
 
                 .actions-section h3::before {
                     content: "⚡";
                     font-size: 1.2rem;
+                }
+
+                .actions-section h3::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -10px;
+                    left: 0;
+                    width: 50px;
+                    height: 3px;
+                    background: linear-gradient(135deg, #667eea, #764ba2);
+                    border-radius: 2px;
                 }
 
         .action-buttons {
@@ -243,7 +341,24 @@
             align-items: center;
             justify-content: center;
             gap: 10px;
+            position: relative;
+            overflow: hidden;
         }
+
+            .action-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+                transition: left 0.5s;
+            }
+
+            .action-btn:hover::before {
+                left: 100%;
+            }
 
             .action-btn.primary {
                 background: linear-gradient(135deg, #667eea, #764ba2);
@@ -268,6 +383,103 @@
                 box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
             }
 
+            .action-btn:active {
+                transform: translateY(-1px);
+            }
+
+        .enrollment-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-bottom: 30px;
+        }
+
+            .enrollment-section h3 {
+                color: #2c3e50;
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 25px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                position: relative;
+            }
+
+                .enrollment-section h3::before {
+                    content: "📚";
+                    font-size: 1.2rem;
+                }
+
+                .enrollment-section h3::after {
+                    content: '';
+                    position: absolute;
+                    bottom: -10px;
+                    left: 0;
+                    width: 50px;
+                    height: 3px;
+                    background: linear-gradient(135deg, #667eea, #764ba2);
+                    border-radius: 2px;
+                }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+            .table thead {
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+            }
+
+            .table th,
+            .table td {
+                padding: 15px;
+                text-align: left;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            .table th {
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                font-size: 0.9rem;
+            }
+
+            .table tbody tr {
+                transition: all 0.3s ease;
+            }
+
+                .table tbody tr:hover {
+                    background: rgba(102, 126, 234, 0.05);
+                    transform: scale(1.01);
+                }
+
+        .no-enrollments {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+            .no-enrollments::before {
+                content: "📝";
+                font-size: 3rem;
+                display: block;
+                margin-bottom: 20px;
+            }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -283,11 +495,24 @@
             text-align: center;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
+            .stat-card::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 4px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+            }
+
             .stat-card:hover {
-                transform: translateY(-5px);
+                transform: translateY(-5px) scale(1.02);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
             }
 
         .stat-icon {
@@ -299,6 +524,11 @@
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover .stat-icon {
+            transform: scale(1.1) rotate(10deg);
         }
 
         .stat-card:nth-child(1) .stat-icon {
@@ -318,24 +548,113 @@
             font-weight: 700;
             color: #2c3e50;
             margin-bottom: 5px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .stat-label {
             color: #7f8c8d;
             font-size: 1rem;
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        (max-width: 768px) {
-            .profile-grid
+        .invoice-debug {
+            background: rgba(255, 255, 255, 0.1);
+            color: #2c3e50;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        /* Animations */
+       slideInDown {
+            from
 
         {
+            transform: translateY(-100%);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        }
+
+        pulse {
+            0%, 100%
+
+        {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.05);
+        }
+
+        }
+
+         spin {
+            to
+
+        {
+            transform: rotate(360deg);
+        }
+
+        }
+
+        fadeInUp {
+            from
+
+        {
+            transform: translateY(30px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        }
+
+        /* Responsive Design */
+         (max-width: 768px) {
+            body
+
+        {
+            padding: 10px;
+        }
+
+        .profile-grid {
             grid-template-columns: 1fr;
             gap: 20px;
         }
 
         .header h1 {
             font-size: 2rem;
+        }
+
+        .header {
+            padding: 20px;
         }
 
         .avatar {
@@ -356,7 +675,38 @@
             grid-template-columns: 1fr;
         }
 
-        
+        .profile-card,
+        .actions-section,
+        .enrollment-section {
+            padding: 20px;
+        }
+
+        .table th,
+        .table td {
+            padding: 10px;
+            font-size: 0.9rem;
+        }
+
+        }
+
+         (max-width: 480px) {
+            .header h1
+
+        {
+            font-size: 1.8rem;
+        }
+
+        .info-item {
+            flex-direction: column;
+            text-align: center;
+            gap: 10px;
+        }
+
+        .info-icon {
+            margin-right: 0;
+        }
+
+        }
     </style>
 </head>
 <body>
@@ -376,9 +726,19 @@
         <div class="profile-grid">
             <!-- Avatar Section -->
             <div class="profile-card avatar-section">
-                <div class="avatar" id="studentAvatar">EM</div>
+                <div class="avatar" id="studentAvatar">
+                    @{
+                        var initials = Model.Name?.Split(' ')
+                        .Where(n => !string.IsNullOrEmpty(n))
+                        .Take(2)
+                        .Select(n => n[0])
+                        .Aggregate("", (acc, c) => acc + c)
+                        ?? "EM";
+                    }
+                    @initials
+                </div>
                 <div class="student-name" id="studentName">@Model.Name</div>
-                <div class="student-id">Student ID: @($"STU0{Model.Id}")</div>
+                <div class="student-id">Student ID: @($"STU{Model.Id:D4}")</div>
                 <div class="status-badge">Active Student</div>
             </div>
 
@@ -397,7 +757,7 @@
                         <div class="info-icon age">🎂</div>
                         <div class="info-content">
                             <div class="info-label">Age</div>
-                            <div class="info-value" id="displayAge">@Model.Age</div>
+                            <div class="info-value" id="displayAge">@Model.Age years</div>
                         </div>
                     </div>
                     <div class="info-item">
@@ -411,7 +771,7 @@
                         <div class="info-icon location">🌍</div>
                         <div class="info-content">
                             <div class="info-label">Location</div>
-                            <div class="info-value" id="displayLocation">@Model.Country , @Model.State</div>
+                            <div class="info-value" id="displayLocation">@Model.State, @Model.Country</div>
                         </div>
                     </div>
                 </div>
@@ -422,32 +782,88 @@
         <div class="actions-section">
             <h3>Quick Actions</h3>
             <div class="action-buttons">
-                <button class="action-btn primary">
+                <button class="action-btn primary" onclick="handleAction('edit-profile')">
                     📝 Edit Profile
                 </button>
-                <button class="action-btn secondary">
+                <button class="action-btn secondary" onclick="handleAction('view-grades')">
                     📊 View Grades
                 </button>
-                <button class="action-btn success">
+                <button class="action-btn success" onclick="handleAction('payment-history')">
                     💳 Payment History
                 </button>
-                <button class="action-btn primary">
+                <button class="action-btn primary" onclick="handleAction('course-enrollment')">
                     📚 Course Enrollment
                 </button>
-                <button class="action-btn secondary">
+                <button class="action-btn secondary" onclick="handleAction('send-message')">
                     📧 Send Message
                 </button>
-                <button class="action-btn success">
+                <button class="action-btn success" onclick="handleAction('generate-report')">
                     📋 Generate Report
                 </button>
+               
+
             </div>
+        </div>
+
+        <!-- Enrollment & Payment Details -->
+        <div class="enrollment-section">
+            <h3>Enrollment & Payment Details</h3>
+          
+
+            @if (enrollments != null && enrollments.Any())
+            {
+                <div class="table-container">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Course ID</th>
+                                <th>Payment ID</th>
+                                <th>Amount</th>
+                                <th>Payment Date</th>
+                                <th>Course Title</th>
+                                <th>Instructor</th>
+                                <th>Download Invoice</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in enrollments)
+                            {
+                                <tr>
+                                    <td>@item.Enrollment.CourseId</td>
+                                    <td>@item.Enrollment.PaymentId</td>
+                                    <td>@item.Enrollment.Amount.ToString("C")</td>
+                                    <td>@item.Enrollment.PaymentDate.ToString("MMM dd, yyyy")</td>
+                                    <td>@item.Course.CourseTitle</td>
+                                    <td>@item.Course.Instructor</td>
+                                    @* <td>@item.Student.Name</td> *@
+                                    <td>
+                                        <a href="@Url.Action("DownloadInvoice", "Students", new { paymentId = item.Enrollment.PaymentId })"
+                                           class="action-btn success" target="_blank">
+                                            📄 Download Invoice
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="no-enrollments">
+                    No enrollments found for this student.
+                </div>
+            }
         </div>
 
         <!-- Statistics Section -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-icon">📚</div>
-                <div class="stat-value">12</div>
+                <div class="stat-value" id="enrolledCourses">
+                    @((enrollments != null) ? enrollments.Count() : 0)
+                </div>
                 <div class="stat-label">Enrolled Courses</div>
             </div>
             <div class="stat-card">
@@ -464,25 +880,46 @@
     </div>
 
     <script>
-        
-        // Function to get initials for avatar
-        function getInitials(name) {
-            return name.split(' ').map(n => n[0]).join('').toUpperCase();
-        }
+        // Enhanced functionality
+        function handleAction(action) {
+            console.log('Action triggered:', action);
 
-        // Function to populate student data
-        function populateStudentData(data) {
-            // Update avatar initials
-            document.getElementById('studentAvatar').textContent = getInitials(data.name);
+            // Add loading state
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<span class="loading"></span> Processing...`;
+            btn.disabled = true;
 
-            // Update name displays
-            document.getElementById('studentName').textContent = data.name;
-            document.getElementById('displayName').textContent = data.name;
+            // Simulate action processing
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
 
-            // Update other fields
-            document.getElementById('displayAge').textContent = data.age + ' years';
-            document.getElementById('displayEmail').textContent = data.email;
-            document.getElementById('displayLocation').textContent = data.state + ', ' + data.country;
+                // Handle specific actions
+                switch(action) {
+                    case 'edit-profile':
+                        // Redirect to edit page or show modal
+                        alert('Redirecting to edit profile...');
+                        break;
+                    case 'view-grades':
+                        alert('Loading grades...');
+                        break;
+                    case 'payment-history':
+                        alert('Loading payment history...');
+                        break;
+                    case 'course-enrollment':
+                        alert('Loading course enrollment...');
+                        break;
+                    case 'send-message':
+                        alert('Opening message composer...');
+                        break;
+                    case 'generate-report':
+                        alert('Generating report...');
+                        break;
+                    default:
+                        alert('Action not implemented yet.');
+                }
+            }, 1500);
         }
 
         // Function to show debug message if exists
@@ -494,20 +931,7 @@
             }
         }
 
-        // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
-            populateStudentData(studentData);
-
-            // Add click handlers for action buttons
-            document.querySelectorAll('.action-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // Add your action handlers here
-                    console.log('Action clicked:', this.textContent.trim());
-                });
-            });
-        });
-
-        // Animation for cards on scroll
+        // Enhanced animation observer
         const observerOptions = {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
@@ -518,18 +942,322 @@
                 if (entry.isIntersecting) {
                     entry.target.style.opacity = '1';
                     entry.target.style.transform = 'translateY(0)';
+                    entry.target.style.animation = 'fadeInUp 0.6s ease forwards';
                 }
             });
         }, observerOptions);
 
-        // Observe all cards
+        // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.profile-card, .stat-card, .actions-section').forEach(card => {
+            // Animate cards on load
+            document.querySelectorAll('.profile-card, .stat-card, .actions-section, .enrollment-section').forEach((card, index) => {
                 card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
+                card.style.transform = 'translateY(30px)';
                 card.style.transition = 'all 0.6s ease';
+                card.style.animationDelay = `${index * 0.1}s`;
                 observer.observe(card);
             });
+
+            // Add keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    // Close any open modals or reset focus
+                    document.activeElement.blur();
+                }
+            });
+
+            // Add copy functionality for student ID
+            const studentId = document.querySelector('.student-id');
+            if (studentId) {
+                studentId.style.cursor = 'pointer';
+                studentId.title = 'Click to copy Student ID';
+                studentId.addEventListener('click', function() {
+                    const text = this.textContent;
+                    navigator.clipboard.writeText(text).then(() => {
+                        // Show copied feedback
+                        const originalText = this.textContent;
+                        this.textContent = 'Copied!';
+                        this.style.background = 'rgba(0, 184, 148, 0.2)';
+                        setTimeout(() => {
+                            this.textContent = originalText;
+                            this.style.background = 'rgba(0, 0, 0, 0.05)';
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy text: ', err);
+                    });
+                });
+            }
+
+            // Add email click functionality
+            const emailElement = document.getElementById('displayEmail');
+            if (emailElement) {
+                emailElement.style.cursor = 'pointer';
+                emailElement.title = 'Click to send email';
+                emailElement.addEventListener('click', function() {
+                    window.location.href = `mailto:${this.textContent}`;
+                });
+            }
+
+            // Enhanced avatar interaction
+            const avatar = document.getElementById('studentAvatar');
+            if (avatar) {
+                avatar.addEventListener('click', function() {
+                    // Could trigger profile picture upload
+                    alert('Profile picture upload functionality would go here');
+                });
+            }
+
+            // Add smooth scrolling for internal navigation
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Update stats dynamically if enrollments data is available
+            updateStats();
+        });
+
+        function updateStats() {
+            // Update enrolled courses count from actual data
+            const enrollmentRows = document.querySelectorAll('.table tbody tr');
+            const enrolledCoursesElement = document.getElementById('enrolledCourses');
+            if (enrolledCoursesElement && enrollmentRows.length > 0) {
+                enrolledCoursesElement.textContent = enrollmentRows.length;
+            }
+
+            // Calculate total payment amount if available
+            let totalAmount = 0;
+            enrollmentRows.forEach(row => {
+                const amountCell = row.cells[2];
+                if (amountCell) {
+                    const amount = parseFloat(amountCell.textContent.replace(/[^0-9.-]+/g, ''));
+                    if (!isNaN(amount)) {
+                        totalAmount += amount;
+                    }
+                }
+            });
+
+            // You could add a total payment stat card here if needed
+        }
+
+        // Add search functionality for enrollments table
+        function addTableSearch() {
+            const searchInput = document.createElement('input');
+            searchInput.type = 'text';
+            searchInput.placeholder = 'Search enrollments...';
+            searchInput.style.cssText = `
+                width: 100%;
+                padding: 10px 15px;
+                margin-bottom: 20px;
+                border: 2px solid rgba(102, 126, 234, 0.2);
+                border-radius: 25px;
+                font-size: 1rem;
+                outline: none;
+                transition: border-color 0.3s ease;
+            `;
+
+            searchInput.addEventListener('focus', function() {
+                this.style.borderColor = 'rgba(102, 126, 234, 0.5)';
+            });
+
+            searchInput.addEventListener('blur', function() {
+                this.style.borderColor = 'rgba(102, 126, 234, 0.2)';
+            });
+
+            const tableContainer = document.querySelector('.table-container');
+            if (tableContainer) {
+                tableContainer.parentNode.insertBefore(searchInput, tableContainer);
+
+                searchInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase();
+                    const rows = document.querySelectorAll('.table tbody tr');
+
+                    rows.forEach(row => {
+                        const text = row.textContent.toLowerCase();
+                        if (text.includes(searchTerm)) {
+                            row.style.display = '';
+                        } else {
+                            row.style.display = 'none';
+                        }
+                    });
+                });
+            }
+        }
+
+        // Add table search if there are enrollments
+        setTimeout(() => {
+            if (document.querySelector('.table tbody tr')) {
+                addTableSearch();
+            }
+        }, 100);
+
+        // Add print functionality
+        function printProfile() {
+            window.print();
+        }
+
+        // Add export functionality
+        function exportToCSV() {
+            const table = document.querySelector('.table');
+            if (!table) return;
+
+            let csv = [];
+            const rows = table.querySelectorAll('tr');
+
+            rows.forEach(row => {
+                const cols = row.querySelectorAll('td, th');
+                const csvRow = [];
+                cols.forEach(col => {
+                    csvRow.push('"' + col.textContent.replace(/"/g, '""') + '"');
+                });
+                csv.push(csvRow.join(','));
+            });
+
+            const csvContent = csv.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `student_${document.getElementById('studentName').textContent.replace(/\s+/g, '_')}_enrollments.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Add notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 10px;
+                color: white;
+                font-weight: 600;
+                z-index: 1000;
+                animation: slideInRight 0.3s ease;
+                max-width: 300px;
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            `;
+
+            switch(type) {
+                case 'success':
+                    notification.style.background = 'linear-gradient(135deg, #00b894, #00cec9)';
+                    break;
+                case 'error':
+                    notification.style.background = 'linear-gradient(135deg, #ff6b6b, #ee5a24)';
+                    break;
+                case 'warning':
+                    notification.style.background = 'linear-gradient(135deg, #fdcb6e, #f39c12)';
+                    break;
+                default:
+                    notification.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
+            }
+
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOutRight 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Add slideInRight and slideOutRight animations
+        const style = document.createElement('style');
+        style.textContent = `
+         slideInRight {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+
+        slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Enhanced error handling
+        window.addEventListener('error', function(e) {
+            console.error('JavaScript error:', e.error);
+            showNotification('An error occurred. Please refresh the page.', 'error');
+        });
+
+        // Add accessibility improvements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add ARIA labels
+            const avatar = document.getElementById('studentAvatar');
+            if (avatar) {
+                avatar.setAttribute('aria-label', 'Student profile picture');
+                avatar.setAttribute('role', 'button');
+                avatar.setAttribute('tabindex', '0');
+            }
+
+            // Add focus management for buttons
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        this.click();
+                    }
+                });
+            });
+
+            // Add skip link for keyboard navigation
+            const skipLink = document.createElement('a');
+            skipLink.href = '#main-content';
+            skipLink.textContent = 'Skip to main content';
+            skipLink.style.cssText = `
+                position: absolute;
+                top: -40px;
+                left: 6px;
+                background: #000;
+                color: white;
+                padding: 8px;
+                text-decoration: none;
+                border-radius: 4px;
+                z-index: 1000;
+            `;
+            skipLink.addEventListener('focus', function() {
+                this.style.top = '6px';
+            });
+            skipLink.addEventListener('blur', function() {
+                this.style.top = '-40px';
+            });
+            document.body.insertBefore(skipLink, document.body.firstChild);
+
+            // Add main content ID
+            const container = document.querySelector('.container');
+            if (container) {
+                container.id = 'main-content';
+            }
         });
     </script>
 </body>

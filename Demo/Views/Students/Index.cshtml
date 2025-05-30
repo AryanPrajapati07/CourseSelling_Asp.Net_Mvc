@@ -1,8 +1,6 @@
 ﻿@model List<Student>
 
 @{
-
-
 	var searchTerm = Context.Request.Query.ContainsKey("searchString")
 		? Context.Request.Query["searchString"].ToString()
 		: "";
@@ -10,9 +8,6 @@
 	// var sortBy = Context.Request.Query.ContainsKey("sortBy") ? Context.Request.Query["sortBy"].ToString() : "";
 	var dobFrom = Context.Request.Query.ContainsKey("dobFrom") ? Context.Request.Query["dobFrom"].ToString() : "";
 	var dobTo = Context.Request.Query.ContainsKey("dobTo") ? Context.Request.Query["dobTo"].ToString() : "";
-
-
-
 }
 
 <!DOCTYPE html>
@@ -20,7 +15,8 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Admin Panel - Add Students</title>
+	<title>Admin Panel - Student Management</title>
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 	<style>
 		* {
 			margin: 0;
@@ -33,16 +29,21 @@
 			--primary-color: #4361ee;
 			--secondary-color: #3f37c9;
 			--accent-color: #4895ef;
-			--success-color: #4cc9f0;
-			--warning-color: #f72585;
+			--success-color: #28a745;
+			--warning-color: #ffc107;
+			--danger-color: #dc3545;
+			--info-color: #17a2b8;
 			--text-color: #212529;
 			--light-gray: #f8f9fa;
 			--medium-gray: #e9ecef;
 			--dark-gray: #6c757d;
+			--border-radius: 8px;
+			--shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+			--shadow-hover: 0 4px 20px rgba(0, 0, 0, 0.15);
 		}
 
 		body {
-			background-color: #f5f5f5;
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 			min-height: 100vh;
 			display: flex;
 			width: 100%;
@@ -114,8 +115,11 @@
 		.main-content {
 			flex: 1;
 			margin-left: 250px;
-			padding: 20px;
+			padding: 30px;
 			width: calc(100% - 250px);
+			background: rgba(255, 255, 255, 0.95);
+			backdrop-filter: blur(10px);
+			min-height: 100vh;
 		}
 
 		.header {
@@ -123,32 +127,43 @@
 			justify-content: space-between;
 			align-items: center;
 			margin-bottom: 30px;
-			padding-bottom: 10px;
-			border-bottom: 1px solid var(--medium-gray);
+			padding: 20px 0;
+			border-bottom: 2px solid var(--medium-gray);
 		}
 
 		.page-title {
-			font-size: 24px;
-			font-weight: bold;
+			font-size: 28px;
+			font-weight: 700;
 			color: var(--text-color);
+			display: flex;
+			align-items: center;
+			gap: 10px;
 		}
+
+			.page-title i {
+				color: var(--primary-color);
+			}
 
 		.user-profile {
 			display: flex;
 			align-items: center;
+			background: white;
+			padding: 10px 15px;
+			border-radius: var(--border-radius);
+			box-shadow: var(--shadow);
 		}
 
 		.user-avatar {
-			width: 40px;
-			height: 40px;
+			width: 45px;
+			height: 45px;
 			border-radius: 50%;
-			background-color: var(--primary-color);
+			background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
 			color: white;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			font-weight: bold;
-			margin-right: 10px;
+			margin-right: 12px;
 		}
 
 		.user-info {
@@ -157,8 +172,9 @@
 		}
 
 		.user-name {
-			font-weight: bold;
+			font-weight: 600;
 			color: var(--text-color);
+			font-size: 14px;
 		}
 
 		.user-role {
@@ -166,14 +182,303 @@
 			color: var(--dark-gray);
 		}
 
-		.form-container {
-			background-color: white;
-			border-radius: 8px;
-			width: 110%;
-			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-			padding: 30px;
+		.stats-container {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+			gap: 20px;
+			margin-bottom: 30px;
 		}
 
+		.stat-card {
+			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+			color: white;
+			padding: 25px;
+			border-radius: var(--border-radius);
+			box-shadow: var(--shadow);
+			transition: transform 0.3s, box-shadow 0.3s;
+		}
+
+			.stat-card:hover {
+				transform: translateY(-5px);
+				box-shadow: var(--shadow-hover);
+			}
+
+			.stat-card h3 {
+				font-size: 32px;
+				font-weight: 700;
+				margin-bottom: 5px;
+			}
+
+			.stat-card p {
+				font-size: 14px;
+				opacity: 0.9;
+			}
+
+		.form-container {
+			background: white;
+			border-radius: 12px;
+			box-shadow: var(--shadow);
+			padding: 30px;
+			margin-bottom: 20px;
+		}
+
+		.section-title {
+			font-size: 20px;
+			font-weight: 600;
+			color: var(--text-color);
+			margin-bottom: 20px;
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+			.section-title i {
+				color: var(--primary-color);
+			}
+
+		.btn {
+			padding: 10px 20px;
+			border: none;
+			border-radius: var(--border-radius);
+			font-weight: 500;
+			text-decoration: none;
+			display: inline-flex;
+			align-items: center;
+			gap: 8px;
+			cursor: pointer;
+			transition: all 0.3s;
+			font-size: 14px;
+		}
+
+		.btn-primary {
+			background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+			color: white;
+		}
+
+			.btn-primary:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 15px rgba(67, 97, 238, 0.4);
+			}
+
+		.btn-success {
+			background: linear-gradient(135deg, var(--success-color), #20c997);
+			color: white;
+		}
+
+			.btn-success:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+			}
+
+		.btn-warning {
+			background: linear-gradient(135deg, var(--warning-color), #fd7e14);
+			color: white;
+		}
+
+			.btn-warning:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 15px rgba(255, 193, 7, 0.4);
+			}
+
+		.btn-danger {
+			background: linear-gradient(135deg, var(--danger-color), #e74c3c);
+			color: white;
+		}
+
+			.btn-danger:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+			}
+
+		.btn-sm {
+			padding: 6px 12px;
+			font-size: 12px;
+		}
+
+		.form-control, .form-select {
+			padding: 12px 15px;
+			border: 2px solid var(--medium-gray);
+			border-radius: var(--border-radius);
+			font-size: 14px;
+			transition: all 0.3s;
+			width: 100%;
+		}
+
+			.form-control:focus, .form-select:focus {
+				outline: none;
+				border-color: var(--primary-color);
+				box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+			}
+
+		.form-label {
+			font-weight: 500;
+			color: var(--text-color);
+			margin-bottom: 8px;
+			display: block;
+		}
+
+		.input-group {
+			display: flex;
+			gap: 0;
+		}
+
+			.input-group .form-control {
+				border-top-right-radius: 0;
+				border-bottom-right-radius: 0;
+				border-right: none;
+			}
+
+			.input-group .btn {
+				border-top-left-radius: 0;
+				border-bottom-left-radius: 0;
+			}
+
+		.filters-section {
+			background: var(--light-gray);
+			padding: 20px;
+			border-radius: var(--border-radius);
+			margin: 20px 0;
+		}
+
+		.row {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 15px;
+		}
+
+		.col-md-2, .col-md-4 {
+			flex: 1;
+			min-width: 200px;
+		}
+
+		.table-container {
+			background: white;
+			border-radius: 12px;
+			box-shadow: var(--shadow);
+			overflow: hidden;
+		}
+
+		.table {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 0;
+		}
+
+			.table th {
+				background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+				color: white;
+				padding: 15px 12px;
+				font-weight: 600;
+				text-align: left;
+				border: none;
+			}
+
+			.table td {
+				padding: 15px 12px;
+				border-bottom: 1px solid var(--medium-gray);
+				vertical-align: middle;
+			}
+
+			.table tbody tr:hover {
+				background-color: var(--light-gray);
+				transition: background-color 0.3s;
+			}
+
+		.img-thumbnail {
+			border-radius: 50%;
+			border: 3px solid var(--medium-gray);
+			transition: transform 0.3s;
+		}
+
+			.img-thumbnail:hover {
+				transform: scale(1.1);
+			}
+
+		.no-records {
+			text-align: center;
+			padding: 40px;
+			color: var(--dark-gray);
+			font-style: italic;
+		}
+
+		.action-buttons {
+			display: flex;
+			gap: 8px;
+		}
+
+		.mb-3 {
+			margin-bottom: 1rem;
+		}
+
+		.mb-4 {
+			margin-bottom: 1.5rem;
+		}
+
+		.mt-3 {
+			margin-top: 1rem;
+		}
+
+		.text-center {
+			text-align: center;
+		}
+
+		.text-nowrap {
+			white-space: nowrap;
+		}
+
+		.d-flex {
+			display: flex;
+		}
+
+		.justify-content-between {
+			justify-content: space-between;
+		}
+
+		.align-items-center {
+			align-items: center;
+		}
+
+		.align-items-end {
+			align-items: flex-end;
+		}
+
+		.d-grid {
+			display: grid;
+		}
+
+		 (max-width: 768px) {
+			.main-content
+
+		{
+			margin-left: 0;
+			width: 100%;
+			padding: 20px;
+		}
+
+		.sidebar {
+			transform: translateX(-100%);
+			transition: transform 0.3s;
+		}
+
+		.header {
+			flex-direction: column;
+			gap: 15px;
+			text-align: center;
+		}
+
+		.stats-container {
+			grid-template-columns: 1fr;
+		}
+
+		.row {
+			flex-direction: column;
+		}
+
+		.table-container {
+			overflow-x: auto;
+		}
+
+		}
 	</style>
 </head>
 <body>
@@ -209,10 +514,10 @@
 				</li>
 				<li>
 					<a href="/Courses/Instructor" class="menu-link" style="text-decoration:none;color:inherit;">
-					<div class="menu-item">
-						<span class="menu-icon">👨‍🏫</span>
-						<span>Instructors</span>
-					</div>
+						<div class="menu-item">
+							<span class="menu-icon">👨‍🏫</span>
+							<span>Instructors</span>
+						</div>
 					</a>
 				</li>
 				<li>
@@ -236,38 +541,75 @@
 			</ul>
 		</div>
 
-
-
-
 		<div class="main-content">
-			<div class="header d-flex justify-content-between align-items-center mb-4">
-				<h2 class="page-title">Add New Student</h2>
-				<div class="user-profile d-flex align-items-center">
-					<div class="user-avatar bg-primary text-white rounded-circle text-center me-2" style="width:40px; height:40px;">JD</div>
+			<div class="header">
+				<h1 class="page-title">
+					<i class="fas fa-users"></i>
+					Student Management
+				</h1>
+				<div class="user-profile">
+					<div class="user-avatar">JD</div>
 					<div class="user-info">
-						<div class="user-name fw-bold">John Doe</div>
-						<div class="user-role text-muted">Administrator</div>
+						<div class="user-name">John Doe</div>
+						<div class="user-role">Administrator</div>
 					</div>
 				</div>
 			</div>
 
+			<!-- Statistics Cards -->
+			<div class="stats-container">
+				<div class="stat-card">
+					<h3>@(Model?.Count ?? 0)</h3>
+					<p><i class="fas fa-users"></i> Total Students</p>
+				</div>
+				<div class="stat-card">
+					<h3>@(Model?.Count(s => s.Gender == "Male") ?? 0)</h3>
+					<p><i class="fas fa-mars"></i> Male Students</p>
+				</div>
+				<div class="stat-card">
+					<h3>@(Model?.Count(s => s.Gender == "Female") ?? 0)</h3>
+					<p><i class="fas fa-venus"></i> Female Students</p>
+				</div>
+				
+			</div>
+
 			<div class="form-container">
+				<div class="section-title">
+					<i class="fas fa-plus-circle"></i>
+					Quick Actions
+				</div>
+				<a class="btn btn-success mb-3" asp-controller="Students" asp-action="Create">
+					<i class="fas fa-user-plus"></i>
+					Add New Student
+				</a>
+
+				<div class="section-title mt-3">
+					<i class="fas fa-search"></i>
+					Search & Filter Students
+				</div>
+
+				<!-- Search Section -->
 				<div class="mb-4">
-					<a class="btn btn-success mb-3" asp-controller="Students" asp-action="Create">+ New Student</a>
-
-					<!-- Search & Filter Form -->
-
 					<div class="col-md-4">
 						<div class="input-group">
-							<input type="text" id="searchString" name="searchString" class="form-control" placeholder="Search by Name or Email..." value="@searchTerm" />
-							<button type="submit" class="btn btn-primary">Search</button>
+							<input type="text" id="searchString" name="searchString" class="form-control"
+								   placeholder="Search by Name or Email..." value="@searchTerm"
+								   style="border-right: 2px solid var(--medium-gray);" />
+							<button type="submit" class="btn btn-primary">
+								<i class="fas fa-search"></i>
+								Search
+							</button>
 						</div>
 					</div>
+				</div>
 
-
-					<div class="row g-3 align-items-end mt-3">
+				<!-- Filters Section -->
+				<div class="filters-section">
+					<div class="row align-items-end">
 						<div class="col-md-2">
-							<label for="sortBy" class="form-label">Sort By</label>
+							<label for="sortBy" class="form-label">
+								<i class="fas fa-sort"></i> Sort By
+							</label>
 							<select name="sortBy" id="sortBy" class="form-select">
 								<option value="">None</option>
 								<option value="Name">Name (A-Z)</option>
@@ -276,7 +618,9 @@
 						</div>
 
 						<div class="col-md-2">
-							<label for="gender" class="form-label">Gender</label>
+							<label for="gender" class="form-label">
+								<i class="fas fa-venus-mars"></i> Gender
+							</label>
 							<select name="gender" id="gender" class="form-select">
 								<option value="">All</option>
 								<option value="Male">Male</option>
@@ -285,77 +629,96 @@
 						</div>
 
 						<div class="col-md-2">
-							<label for="dobFrom" class="form-label">DOB From</label>
+							<label for="dobFrom" class="form-label">
+								<i class="fas fa-calendar-alt"></i> DOB From
+							</label>
 							<input type="date" name="dobFrom" id="dobFrom" class="form-control" value="@dobFrom" />
 						</div>
 
 						<div class="col-md-2">
-							<label for="dobTo" class="form-label">DOB To</label>
+							<label for="dobTo" class="form-label">
+								<i class="fas fa-calendar-alt"></i> DOB To
+							</label>
 							<input type="date" name="dobTo" id="dobTo" class="form-control" value="@dobTo" />
 						</div>
 
 						<div class="col-md-2 d-grid">
-							<button type="submit" class="btn btn-primary">Apply Filters</button>
+							<button type="submit" class="btn btn-primary">
+								<i class="fas fa-filter"></i>
+								Apply Filters
+							</button>
 						</div>
 					</div>
-
-
-				</div>
-
-				<!-- Student Table -->
-				<div class="table-responsive" style="width:100%;">
-					<table class="table table-bordered align-middle">
-						<thead class="table-light">
-							<tr>
-								<th>Id</th>
-								<th>Name</th>
-								<th>Email</th>
-								<th>Gender</th>
-								<th>Age</th>
-								<th>DOB</th>
-								<th>Country</th>
-								<th>State</th>
-								<th>Image</th>
-								<th>Action</th>
-							</tr>
-						</thead>
-						<tbody>
-							@if (Model != null && Model.Any())
-							{
-								foreach (var student in Model)
-								{
-									<tr>
-										<td>@student.Id</td>
-										<td>@student.Name</td>
-										<td>@student.Email</td>
-										<td>@student.Gender</td>
-										<td>@student.Age</td>
-										<td>@student.Dob.ToString("dd/MM/yyyy")</td>
-										<td>@student.Country</td>
-										<td>@student.State</td>
-										<td>
-											<img src="@student.ImageFileName" alt="@student.Name's photo" width="50" height="50" class="img-thumbnail" />
-										</td>
-										<td class="text-nowrap">
-											<a class="btn btn-sm btn-warning" asp-controller="Students" asp-action="Edit" asp-route-id="@student.Id">Edit</a>
-											<a class="btn btn-sm btn-danger" asp-controller="Students" asp-action="Delete" asp-route-id="@student.Id">Delete</a>
-										</td>
-									</tr>
-								}
-							}
-							else
-							{
-								<tr>
-									<td colspan="8" class="text-center text-muted">No Records found.</td>
-								</tr>
-							}
-						</tbody>
-					</table>
 				</div>
 			</div>
+
+			<!-- Students Table -->
+			<div class="table-container">
+				<table class="table">
+					<thead>
+						<tr>
+							<th><i class="fas fa-hashtag"></i> ID</th>
+							<th><i class="fas fa-user"></i> Name</th>
+							<th><i class="fas fa-envelope"></i> Email</th>
+							<th><i class="fas fa-venus-mars"></i> Gender</th>
+							<th><i class="fas fa-birthday-cake"></i> Age</th>
+							<th><i class="fas fa-calendar"></i> Joining</th>
+							<th><i class="fas fa-globe"></i> Country</th>
+							<th><i class="fas fa-map-marker-alt"></i> State</th>
+							<th><i class="fas fa-image"></i> Photo</th>
+							<th><i class="fas fa-cogs"></i> Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						@if (Model != null && Model.Any())
+						{
+							foreach (var student in Model)
+							{
+								<tr>
+									<td><strong>@student.Id</strong></td>
+									<td>@student.Name</td>
+									<td>@student.Email</td>
+									<td>
+										<span style="color: @(student.Gender == "Male" ? "#007bff" : "#e91e63");">
+											<i class="fas fa-@(student.Gender == "Male" ? "mars" : "venus")"></i>
+											@student.Gender
+										</span>
+									</td>
+									<td>@student.Age years</td>
+									<td>@student.Dob.ToString("dd/MM/yyyy")</td>
+									<td>@student.Country</td>
+									<td>@student.State</td>
+									<td>
+										<img src="@student.ImageFileName" alt="@student.Name's photo"
+											 width="50" height="50" class="img-thumbnail" />
+									</td>
+									<td class="action-buttons text-nowrap">
+										<a class="btn btn-sm btn-warning" asp-controller="Students" asp-action="Edit" asp-route-id="@student.Id">
+											<i class="fas fa-edit"></i> Edit
+										</a>
+										<a class="btn btn-sm btn-danger" asp-controller="Students" asp-action="Delete" asp-route-id="@student.Id">
+											<i class="fas fa-trash"></i> Delete
+										</a>
+									</td>
+								</tr>
+							}
+						}
+						else
+						{
+							<tr>
+								<td colspan="10" class="no-records">
+									<i class="fas fa-search" style="font-size: 48px; color: var(--dark-gray); margin-bottom: 10px;"></i>
+									<br>
+									No student records found.
+									<br>
+									<small>Try adjusting your search criteria or add a new student.</small>
+								</td>
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
 		</div>
-
 	</form>
-
 </body>
 </html>

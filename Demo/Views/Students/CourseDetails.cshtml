@@ -228,35 +228,61 @@
     </div>
 </body>
 </html>
+
+
+
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 <script>
     document.getElementById('enrollBtn').onclick = function (e) {
         e.preventDefault();
 
         var options = {
-            "key": "rzp_test_kLX7L8BYDbH8a2", // Enter the Key ID generated from the Dashboard
-            "amount": @((int)(Model.Price * 100)), // Amount is in currency subunits. Default is INR. Hence, 100 refers to 100 paise
+            "key": "rzp_test_kLX7L8BYDbH8a2",
+            "amount": @((int)(Model.Price * 100)),
             "currency": "INR",
             "name": "@Model.CourseTitle",
             "description": "Course Enrollment",
             "image": "@Url.Content($"~{Model.ImagePath}")",
-            // "order_id": "order_9A33XWu170gUtm", // Pass the order_id if you generate orders from backend
-            "handler": function (response){
-                alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
-                // TODO: Send payment info to server for verification and enrollment
+            "handler": function (response) {
+                const payload = {
+                    courseId: @Model.Id,
+                    paymentId: response.razorpay_payment_id,
+                    amount: @Model.Price,
+                    paymentDate: new Date().toISOString()
+                };
+
+                console.log("Sending to server:", payload); // ✅ Debug log
+
+                fetch('/Students/Enroll', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        alert("Enrollment successful! Payment ID: " + response.razorpay_payment_id);
+                        window.location.href = '/Students/Profile';
+                    } else {
+                        alert("Enrollment failed: " + data.message);
+                    }
+                })
+                .catch(err => alert("Error contacting server: " + err));
             },
             "prefill": {
-                "name": "",
-                "email": "",
-                "contact": ""
+                "name": "@ViewBag.StudentName",
+                "email": "@ViewBag.StudentEmail"
             },
             "theme": {
                 "color": "#4f46e5"
             }
         };
+
         var rzp1 = new Razorpay(options);
         rzp1.open();
-    }
+    };
 </script>
+
+
 
 

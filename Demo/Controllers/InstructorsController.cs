@@ -17,6 +17,45 @@ namespace Demo.Controllers
             this._configuration = configuration; // Assign the injected configuration
         }
 
+        // GET: Instructors/Create
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: Instructors/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Instructor instructor)
+        {
+            if (ModelState.IsValid)
+            {
+                // Handle file upload
+                if (instructor.Profile != null && instructor.Profile.Length > 0)
+                {
+                    var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads", "instructors");
+                    Directory.CreateDirectory(uploadsFolder); // Ensure folder exists
+
+                    var uniqueFileName = Guid.NewGuid().ToString() + Path.GetExtension(instructor.Profile.FileName);
+                    var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await instructor.Profile.CopyToAsync(stream);
+                    }
+
+                    // Save relative path to database
+                    instructor.ProfilePath = "/uploads/instructors/" + uniqueFileName;
+                }
+
+                context.Instructors.Add(instructor);
+                await context.SaveChangesAsync();
+                return RedirectToAction("Dashboard","Courses"); // Or your desired page
+            }
+            return View(instructor);
+        }
+
+
         public List<Instructor> GetInstructors()
         {
             var instructors = new List<Instructor>();

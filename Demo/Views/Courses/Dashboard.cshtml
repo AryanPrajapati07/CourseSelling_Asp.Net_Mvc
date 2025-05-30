@@ -160,11 +160,253 @@
 
 		.form-container {
 			background-color: white;
-			border-radius: 8px;
-			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+			border-radius: 12px;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 			padding: 30px;
+			margin-bottom: 30px;
 		}
 
+		/* Enhanced Button Styles */
+		.btn {
+			padding: 10px 20px;
+			border: none;
+			border-radius: 8px;
+			cursor: pointer;
+			font-weight: 500;
+			text-decoration: none;
+			display: inline-block;
+			transition: all 0.3s ease;
+			font-size: 14px;
+		}
+
+		.btn-primary {
+			background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+			color: white;
+		}
+
+			.btn-primary:hover {
+				background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+				transform: translateY(-2px);
+				box-shadow: 0 4px 12px rgba(67, 97, 238, 0.3);
+			}
+
+		.btn-sm {
+			padding: 6px 12px;
+			font-size: 12px;
+		}
+
+		.btn-success {
+			background: linear-gradient(135deg, #28a745, #20c997);
+			color: white;
+		}
+
+		.btn-danger {
+			background: linear-gradient(135deg, #dc3545, #e83e8c);
+			color: white;
+		}
+
+			.btn-success:hover, .btn-danger:hover {
+				transform: translateY(-1px);
+				box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+			}
+
+		/* Enhanced Search Section */
+		.search-section {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 30px;
+			gap: 20px;
+		}
+
+		.input-group {
+			display: flex;
+			align-items: center;
+			background: white;
+			border: 2px solid var(--medium-gray);
+			border-radius: 8px;
+			overflow: hidden;
+			transition: all 0.3s ease;
+			flex: 1;
+			max-width: 400px;
+		}
+
+			.input-group:focus-within {
+				border-color: var(--primary-color);
+				box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.1);
+			}
+
+		.form-control {
+			border: none;
+			padding: 12px 16px;
+			flex: 1;
+			outline: none;
+			font-size: 14px;
+		}
+
+		/* Enhanced Table Styles */
+		.table-container {
+			background: white;
+			border-radius: 12px;
+			overflow: hidden;
+			box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+			margin-bottom: 30px;
+		}
+
+		.table {
+			width: 100%;
+			border-collapse: collapse;
+			margin: 0;
+			font-size: 14px;
+		}
+
+			.table thead {
+				background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+				color: white;
+			}
+
+				.table thead th {
+					padding: 18px 16px;
+					font-weight: 600;
+					text-align: left;
+					letter-spacing: 0.5px;
+					text-transform: uppercase;
+					font-size: 12px;
+					border: none;
+				}
+
+			.table tbody tr {
+				transition: all 0.3s ease;
+				border-bottom: 1px solid #f1f3f4;
+			}
+
+				.table tbody tr:hover {
+					background-color: #f8f9ff;
+					transform: scale(1.002);
+					box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+				}
+
+				.table tbody tr:last-child {
+					border-bottom: none;
+				}
+
+			.table tbody td {
+				padding: 16px;
+				vertical-align: middle;
+				border: none;
+			}
+
+				.table tbody td:first-child {
+					font-weight: 600;
+					color: var(--primary-color);
+				}
+
+		/* Action Buttons */
+		.action-buttons {
+			display: flex;
+			gap: 8px;
+			align-items: center;
+		}
+
+		/* Status Badge */
+		.badge {
+			padding: 4px 12px;
+			border-radius: 20px;
+			font-size: 12px;
+			font-weight: 500;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+		}
+
+		.badge-beginner {
+			background-color: #e3f2fd;
+			color: #1976d2;
+		}
+
+		.badge-intermediate {
+			background-color: #fff3e0;
+			color: #f57c00;
+		}
+
+		.badge-advanced {
+			background-color: #fce4ec;
+			color: #c2185b;
+		}
+
+		/* Price Styling */
+		.price {
+			font-weight: 600;
+			color: #2e7d32;
+			font-size: 15px;
+		}
+
+		/* Empty State */
+		.empty-state {
+			text-align: center;
+			padding: 60px 20px;
+			color: var(--dark-gray);
+		}
+
+		.empty-state-icon {
+			font-size: 48px;
+			margin-bottom: 16px;
+			opacity: 0.5;
+		}
+
+		/* Section Headers */
+		.section-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 20px;
+			padding-bottom: 12px;
+			border-bottom: 2px solid var(--medium-gray);
+		}
+
+		.section-title {
+			font-size: 20px;
+			font-weight: 600;
+			color: var(--text-color);
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		.section-icon {
+			background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+			color: white;
+			width: 32px;
+			height: 32px;
+			border-radius: 8px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 16px;
+		}
+
+		/* Responsive Design */
+		(max-width: 768px) {
+			.search-section
+
+		{
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		.input-group {
+			max-width: none;
+		}
+
+		.table-container {
+			overflow-x: auto;
+		}
+
+		.action-buttons {
+			flex-direction: column;
+			gap: 4px;
+		}
+
+		}
 	</style>
 </head>
 <body>
@@ -176,11 +418,11 @@
 			</div>
 			<ul class="menu">
 				<li class="active">
-					<a href="/Courses/Dashboard" class="menu-link" style="text-decoration:none;color:inherit;"/>
-						<div class="menu-item">
-							<span class="menu-icon">📊</span>
-							<span>Dashboard</span>
-						</div>
+					<a href="/Courses/Dashboard" class="menu-link" style="text-decoration:none;color:inherit;" />
+					<div class="menu-item">
+						<span class="menu-icon">📊</span>
+						<span>Dashboard</span>
+					</div>
 				</li>
 				<li>
 					<a href="/Students/AddCourse" class="menu-link" style="text-decoration:none;color:inherit;">
@@ -200,10 +442,10 @@
 				</li>
 				<li>
 					<a href="/Courses/Instructor" class="menu-link" style="text-decoration:none;color:inherit;">
-					<div class="menu-item">
-						<span class="menu-icon">👨‍🏫</span>
-						<span>Instructors</span>
-					</div>
+						<div class="menu-item">
+							<span class="menu-icon">👨‍🏫</span>
+							<span>Instructors</span>
+						</div>
 					</a>
 				</li>
 				<li>
@@ -227,9 +469,6 @@
 			</ul>
 		</div>
 
-
-
-
 		<div class="main-content">
 			<div class="header">
 				<div class="page-title">List of Uploaded Courses</div>
@@ -243,113 +482,126 @@
 			</div>
 
 			<div class="form-container">
-
-				<div class="row mb-5">
-					<div class="col">
-						<a class="btn btn-primary" asp-controller="Students" asp-action="AddCourse">Add New Course</a>
-					</div>
-
-
-					<div class="input-group mt-3" style="width:950px;margin-right:100px;">
-						<input type="text" name="searchCourse" class="form-control" placeholder="Search by Title..." value="@search" />
-						<button type="submit" class="btn btn-primary">Search</button>
+				<div class="section-header">
+					<div class="section-title">
+						<div class="section-icon">📚</div>
+						Course Management
 					</div>
 				</div>
 
+				<div class="search-section">
+					<a class="btn btn-primary" asp-controller="Students" asp-action="AddCourse">+ Add New Course</a>
 
-				<table class="table">
-					<thead>
-						<tr>
-							<th>Id</th>
-							<th>Course Title</th>
-							<th>Category</th>
-							<th>Level</th>
-							<th>Instructor</th>
-							<th>Price ($)</th>
-							<th>Duration in Hours</th>
-							<th>Action</th>
+					<div class="input-group">
+						<input type="text" name="searchCourse" class="form-control" placeholder="Search by course title..." value="@search" />
+						<button type="submit" class="btn btn-primary">🔍 Search</button>
+					</div>
+				</div>
 
-						</tr>
-					</thead>
-
-					<tbody>
-						@if (Model != null && Model.Any())
-						{
-							@foreach (var courses in Model)
+				<div class="table-container">
+					<table class="table">
+						<thead>
+							<tr>
+								<th>Course ID</th>
+								<th>Course Title</th>
+								<th>Category</th>
+								<th>Level</th>
+								<th>Instructor</th>
+								<th>Price</th>
+								<th>Duration</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							@if (Model != null && Model.Any())
+							{
+								@foreach (var courses in Model)
+								{
+									<tr>
+										<td>@($"CS250{courses.Id}")</td>
+										<td><strong>@courses.CourseTitle</strong></td>
+										<td>@courses.Category</td>
+										<td>
+											<span class="badge badge-@(courses.Level.ToLower())">@courses.Level</span>
+										</td>
+										<td>@courses.Instructor</td>
+										<td><span class="price">$@courses.Price</span></td>
+										<td>@courses.Hours hrs</td>
+										<td>
+											<div class="action-buttons">
+												<a class="btn btn-success btn-sm" asp-controller="Courses" asp-action="Edit" asp-route-id="@courses.Id">✏️ Edit</a>
+												<a class="btn btn-danger btn-sm" asp-controller="Courses" asp-action="Delete" asp-route-id="@courses.Id">🗑️ Delete</a>
+											</div>
+										</td>
+									</tr>
+								}
+							}
+							else
 							{
 								<tr>
-									<td>@($"CS250{courses.Id}")</td>
-									<td>@courses.CourseTitle</td>
-									<td>@courses.Category</td>
-									<td>@courses.Level</td>
-									<td>@courses.Instructor</td>
-									<td>@courses.Price</td>
-									<td>@courses.Hours</td>
-									<td style="white-space:nowrap">
-										<a class="btn btn-primary btn-sm" asp-controller="Courses" asp-action="Edit" asp-route-id="@courses.Id">Edit</a>
-										<a class="btn btn-primary btn-sm" asp-controller="Courses" asp-action="Delete" asp-route-id="@courses.Id">Delete</a>
+									<td colspan="8">
+										<div class="empty-state">
+											<div class="empty-state-icon">📚</div>
+											<h4>No Courses Found</h4>
+											<p>No courses match your search criteria. Try adjusting your search or add a new course.</p>
+										</div>
 									</td>
-
 								</tr>
 							}
-						}
-						else
-						{
-							<tr>
-								<td colspan="8" class="text-center text-muted">No Records found.</td>
-							</tr>
-						}
-					</tbody>
-				</table>
+						</tbody>
+					</table>
+				</div>
 			</div>
+
+			@if (ViewBag.Instructors != null)
+			{
+				<div class="form-container">
+					<div class="section-header">
+						<div class="section-title">
+							<div class="section-icon">👨‍🏫</div>
+							Instructor Management
+						</div>
+						<a class="btn btn-primary" asp-controller="Courses" asp-action="Instructor">+ Add New Instructor</a>
+					</div>
+
+					<div class="table-container">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>ID</th>
+									<th>Name</th>
+									<th>Email</th>
+									<th>Phone</th>
+									<th>Department</th>
+									<th>Position</th>
+									<th>Experience</th>
+									<th>Status</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var instructor in (List<Instructor>)ViewBag.Instructors)
+								{
+									<tr>
+										<td>@instructor.Id</td>
+										<td><strong>@instructor.FirstName @instructor.LastName</strong></td>
+										<td>@instructor.Email</td>
+										<td>@instructor.Phone</td>
+										<td>@instructor.Department</td>
+										<td>@instructor.Position</td>
+										<td>@instructor.Experience years</td>
+										<td>
+											<span class="badge badge-@(instructor.Availability.ToLower() == "available" ? "beginner" : "intermediate")">
+												@instructor.Availability
+											</span>
+										</td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			}
 		</div>
-
-
-		@if (ViewBag.Instructors != null)
-		{
-			<div class="form-container" style="margin-left:270px;">
-			<h3>Instructors</h3>
-			<table class="table" >
-				<thead>
-					<tr>
-						<th>Id</th>
-						<th>FirstName</th>
-						<th>LastName</th>
-						<th>Email</th>
-						<th>Phone</th>
-						<th>Department</th>
-						<th>Position</th>
-						<th>Experience</th>
-						<th>Availability</th>
-					</tr>
-				</thead>
-				<tbody>
-					@foreach (var instructor in (List<Instructor>)ViewBag.Instructors)
-					{
-						<tr>
-							<td>@instructor.Id</td>
-							<td>@instructor.FirstName</td>
-							<td>@instructor.LastName</td>
-							<td>@instructor.Email</td>
-							<td>@instructor.Phone</td>
-							<td>@instructor.Department</td>
-							<td>@instructor.Position</td>
-							<td>@instructor.Experience</td>
-							<td>@instructor.Availability</td>
-						</tr>
-					}
-				</tbody>
-			</table>
-			</div>
-		}
-
-
-
-
-
-
 	</form>
-
 </body>
 </html>
-
