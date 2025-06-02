@@ -1,4 +1,4 @@
-﻿@model List<Course>
+﻿@model List<Enrollment>
 @{
 
 	var search = Context.Request.Query.ContainsKey("searchCourse")
@@ -410,14 +410,14 @@
 	</style>
 </head>
 <body>
-	<form method="get" asp-controller="Courses" asp-action="Dashboard">
+	<form method="get" asp-controller="Courses" asp-action="PaymentList">
 		<div class="sidebar">
 			<div class="logo">
 				<div class="logo-icon">A</div>
 				<span>Admin Panel</span>
 			</div>
 			<ul class="menu">
-				<li class="active">
+				<li>
 					<a href="/Courses/Dashboard" class="menu-link" style="text-decoration:none;color:inherit;" />
 					<div class="menu-item">
 						<span class="menu-icon">📊</span>
@@ -448,9 +448,8 @@
 						</div>
 					</a>
 				</li>
-				<li>
+				<li class="active">
 					<a href="/Courses/PaymentList" class="menu-link" style="text-decoration:none;color:inherit;">
-
 					<div class="menu-item">
 						<span class="menu-icon">💰</span>
 						<span>Payments</span>
@@ -474,7 +473,7 @@
 
 		<div class="main-content">
 			<div class="header">
-				<div class="page-title">List of Uploaded Courses</div>
+				<div class="page-title">List of Enrollment & Payment Details</div>
 				<div class="user-profile">
 					<div class="user-avatar">JD</div>
 					<div class="user-info">
@@ -485,18 +484,18 @@
 			</div>
 
 			<div class="form-container">
-				<div class="section-header">
-					<div class="section-title">
-						<div class="section-icon">📚</div>
-						Course Management
-					</div>
-				</div>
+				@* <div class="section-header"> *@
+				@* 	<div class="section-title"> *@
+				@* 		<div class="section-icon">📚</div> *@
+				@* 		Course Enrollment Details *@
+				@* 	</div> *@
+				@* </div> *@
 
 				<div class="search-section">
-					<a class="btn btn-primary" asp-controller="Students" asp-action="AddCourse">+ Add New Course</a>
+					@* <a class="btn btn-primary" asp-controller="Students" asp-action="Dashboard"></a> *@
 
 					<div class="input-group">
-						<input type="text" name="searchCourse" class="form-control" placeholder="Search by course title..." value="@search" />
+						<input type="text" name="searchCourse" class="form-control" placeholder="Search by Email..." value="@search" />
 						<button type="submit" class="btn btn-primary">🔍 Search</button>
 					</div>
 				</div>
@@ -505,106 +504,58 @@
 					<table class="table">
 						<thead>
 							<tr>
+								<th>Enrollment ID</th>
+								<th>Email</th>
 								<th>Course ID</th>
-								<th>Course Title</th>
-								<th>Category</th>
-								<th>Level</th>
-								<th>Instructor</th>
-								<th>Price</th>
-								<th>Duration</th>
-								<th>Actions</th>
+								<th>Payment ID</th>
+								<th>Amount</th>
+								<th>Payment Date</th>
+								<th>Invoice</th>
+								
+								
 							</tr>
 						</thead>
-						<tbody>
-							@if (Model != null && Model.Any())
-							{
-								@foreach (var courses in Model)
-								{
-									<tr>
-										<td>@($"CS250{courses.Id}")</td>
-										<td><strong>@courses.CourseTitle</strong></td>
-										<td>@courses.Category</td>
+						 <tbody> 
+						 	@if (Model != null && Model.Any()) 
+						 	{ 
+						 		@foreach (var courses in Model) 
+						 		{ 
+						 			<tr> 
+						 				<td>@($"En250{courses.Id}")</td> 
+						 				<td><strong>@courses.StudentEmail</strong></td>
+										<td>@($"CS250{courses.CourseId}")</td>
+										<td>@courses.PaymentId</td>
+										<td><span class="price">₹@courses.Amount</span></td>
+										<td>@courses.PaymentDate</td>
 										<td>
-											<span class="badge badge-@(courses.Level.ToLower())">@courses.Level</span>
+
+											<a href="@Url.Action("DownloadInvoice", "Students", new { paymentId = courses.PaymentId })">
+												View Invoice
+											</a>
+
 										</td>
-										<td>@courses.Instructor</td>
-										<td><span class="price">$@courses.Price</span></td>
-										<td>@courses.Hours hrs</td>
-										<td>
-											<div class="action-buttons">
-												<a class="btn btn-success btn-sm" asp-controller="Courses" asp-action="Edit" asp-route-id="@courses.Id">✏️ Edit</a>
-												<a class="btn btn-danger btn-sm" asp-controller="Courses" asp-action="Delete" asp-route-id="@courses.Id">🗑️ Delete</a>
-											</div>
-										</td>
-									</tr>
-								}
-							}
-							else
-							{
-								<tr>
-									<td colspan="8">
-										<div class="empty-state">
-											<div class="empty-state-icon">📚</div>
-											<h4>No Courses Found</h4>
-											<p>No courses match your search criteria. Try adjusting your search or add a new course.</p>
-										</div>
-									</td>
-								</tr>
-							}
-						</tbody>
+									</tr> 
+						 		} 
+						 	} 
+						 	else 
+						 	{ 
+						 		<tr> 
+						 			<td colspan="8"> 
+						 				<div class="empty-state"> 
+						 					<div class="empty-state-icon">📚</div> 
+						 					<h4>No Courses Found</h4> 
+						 					<p>No courses match your search criteria. Try adjusting your search or add a new course.</p> 
+						 				</div> 
+						 			</td> 
+						 		</tr> 
+						 	} 
+						 </tbody> 
 					</table>
 				</div>
 			</div>
 
-			@if (ViewBag.Instructors != null)
-			{
-				<div class="form-container">
-					<div class="section-header">
-						<div class="section-title">
-							<div class="section-icon">👨‍🏫</div>
-							Instructor Management
-						</div>
-						<a class="btn btn-primary" asp-controller="Courses" asp-action="Instructor">+ Add New Instructor</a>
-					</div>
-
-					<div class="table-container">
-						<table class="table">
-							<thead>
-								<tr>
-									<th>ID</th>
-									<th>Name</th>
-									<th>Email</th>
-									<th>Phone</th>
-									<th>Department</th>
-									<th>Position</th>
-									<th>Experience</th>
-									<th>Status</th>
-								</tr>
-							</thead>
-							<tbody>
-								@foreach (var instructor in (List<Instructor>)ViewBag.Instructors)
-								{
-									<tr>
-										<td>@instructor.Id</td>
-										<td><strong>@instructor.FirstName @instructor.LastName</strong></td>
-										<td>@instructor.Email</td>
-										<td>@instructor.Phone</td>
-										<td>@instructor.Department</td>
-										<td>@instructor.Position</td>
-										<td>@instructor.Experience years</td>
-										<td>
-											<span class="badge badge-@(instructor.Availability.ToLower() == "available" ? "beginner" : "intermediate")">
-												@instructor.Availability
-											</span>
-										</td>
-									</tr>
-								}
-							</tbody>
-						</table>
-					</div>
-				</div>
-			}
-		</div>
+			
+		
 	</form>
 </body>
 </html>

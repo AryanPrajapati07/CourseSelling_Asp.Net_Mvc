@@ -44,7 +44,15 @@ app.UseSession(); // Moved this line after app is declared
 
 app.UseRouting();
 
+
 app.UseAuthorization();
+
+// Ensure invoices directory exists
+var invoicesDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "invoices");
+if (!Directory.Exists(invoicesDir))
+{
+    Directory.CreateDirectory(invoicesDir);
+}
 
 app.MapControllerRoute(
     name: "default",

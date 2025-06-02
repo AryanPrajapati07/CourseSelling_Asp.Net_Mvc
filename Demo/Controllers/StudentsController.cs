@@ -488,7 +488,6 @@ namespace Demo.Controllers
             if (course == null || student == null)
                 return NotFound();
 
-            // Generate the invoice PDF
             var pdfBytes = invoiceService.GenerateInvoice(
                 paymentId,
                 amount,
@@ -499,61 +498,61 @@ namespace Demo.Controllers
                 student.Email
             );
 
-
-
-            // Save the PDF to wwwroot/invoices
             var invoiceFileName = $"invoice_{paymentId}.pdf";
             var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "invoices");
             Directory.CreateDirectory(rootPath);
             var invoicePath = Path.Combine(rootPath, invoiceFileName);
             await System.IO.File.WriteAllBytesAsync(invoicePath, pdfBytes);
 
+            // 🔥 THIS IS THE MOST CRITICAL FIX 🔥
+            var enrollment = context.Enrollments
+                .FirstOrDefault(e => e.PaymentId == paymentId && e.StudentEmail == student.Email);
 
-            // Optionally, store the invoice path in the student record
-            var enrollment = new Enrollment
+            if (enrollment == null)
             {
-                StudentEmail = student.Email,
-                CourseId = course.Id,
-                PaymentId = paymentId,
-                Amount = amount,
-                PaymentDate = DateTime.Now,
-                InvoicePath = null
-            };
-
-            var enrollment1 = context.Enrollments
-                .FirstOrDefault(e => e.PaymentId == paymentId && e.StudentEmail == email);
-
-            if (enrollment1 != null)
+                // If not found, create new
+                enrollment = new Enrollment
+                {
+                    StudentEmail = student.Email,
+                    CourseId = course.Id,
+                    PaymentId = paymentId,
+                    Amount = amount,
+                    PaymentDate = DateTime.Now,
+                    InvoicePath = $"/invoices/{invoiceFileName}"
+                };
+                context.Enrollments.Add(enrollment);
+            }
+            else
             {
-                enrollment1.InvoicePath = $"/invoices/{invoiceFileName}";
-                context.SaveChanges();
+                // If already exists, update the InvoicePath
+                enrollment.InvoicePath = $"/invoices/{invoiceFileName}";
+                context.Enrollments.Update(enrollment); // ✅ Required to track the update
             }
 
+            await context.SaveChangesAsync(); // ✅ MUST be async to persist update
 
-            // Cache the PDF for download later (store in memory for 1 hour)
+            // Cache for faster download
             _cache.Set($"invoice_{paymentId}", pdfBytes, TimeSpan.FromHours(1));
-
-            // Optionally, redirect to the download endpoint directly:
-            //return RedirectToAction("DownloadInvoice", new { paymentId });
 
             try
             {
                 await _emailService.SendEnrollmentEmailAsync(
-       student.Name,
-       student.Email,
-       course,
-       paymentId,
-       amount);
+                    student.Name,
+                    student.Email,
+                    course,
+                    paymentId,
+                    amount
+                );
             }
-            catch (Exception ex)
+            catch
             {
-                // Log the error properly
-                // Consider using ILogger in production
-                TempData["EmailError"] = "Failed to send confirmation email, but your enrollment was successful.";
+                TempData["EmailError"] = "Failed to send confirmation email, but enrollment is successful.";
             }
 
             return RedirectToAction("Profile");
         }
+
+
 
 
         //send mail
@@ -653,37 +652,92 @@ namespace Demo.Controllers
 
 
 
-        public IActionResult DownloadInvoice(string paymentId)
+        public async Task<IActionResult> DownloadInvoiceAsync(string paymentId)
         {
+
+
+
             var email = HttpContext.Session.GetString("StudentEmail");
             if (string.IsNullOrEmpty(email))
                 return RedirectToAction("StudentLogin");
-
             var enrollment = context.Enrollments
                 .FirstOrDefault(e => e.PaymentId == paymentId && e.StudentEmail == email);
 
-            if (enrollment == null || string.IsNullOrEmpty(enrollment.InvoicePath))
-                return NotFound("Invoice not found.");
-
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", enrollment.InvoicePath.TrimStart('/'));
-            if (!System.IO.File.Exists(filePath))
-                return NotFound("Invoice file not found.");
-
-
-            //var fileBytes = System.IO.File.ReadAllBytes(filePath);
-            //var fileName = Path.GetFileName(filePath);
-            //return File(fileBytes, "application/pdf", fileName);
-
-
-            if (!_cache.TryGetValue($"invoice_{paymentId}", out byte[] pdfBytes))
+            if (enrollment == null)
             {
-                return NotFound("Invoice not found in cache.");
+                return NotFound("Enrollment not found for the given payment ID and student.");
             }
 
-            var fileName = $"invoice_{paymentId}.pdf";
-            return File(pdfBytes, "application/pdf", fileName);
-        }
 
+
+            // First try to get from cache
+            if (_cache.TryGetValue($"invoice_{paymentId}", out byte[] pdfBytes))
+            {
+                var fileName = $"invoice_{paymentId}.pdf";
+                return File(pdfBytes, "application/pdf", fileName);
+            }
+
+            if (string.IsNullOrEmpty(enrollment.InvoicePath))
+            {
+                return NotFound("Invoice path is missing.");
+            }
+
+
+
+            // If not in cache, try to read from file system
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", enrollment.InvoicePath.TrimStart('/'));
+
+            if (!System.IO.File.Exists(filePath))
+            {
+                // If file doesn't exist, try to regenerate it
+                try
+                {
+                    var student = context.Students.FirstOrDefault(s => s.Email == email);
+                    var course = context.Courses.FirstOrDefault(c => c.Id == enrollment.CourseId);
+
+                    if (student == null || course == null)
+                        return NotFound("Required data not found to regenerate invoice.");
+
+                    pdfBytes = invoiceService.GenerateInvoice(
+                        enrollment.PaymentId,
+                        enrollment.Amount,
+                        course.CourseTitle,
+                        course.Hours,
+                        course.Instructor,
+                        student.Name,
+                        student.Email
+                    );
+
+                    // Save the regenerated file
+                    await System.IO.File.WriteAllBytesAsync(filePath, pdfBytes);
+
+                    // Cache the regenerated PDF
+                    _cache.Set($"invoice_{paymentId}", pdfBytes, TimeSpan.FromHours(1));
+
+                    var fileName = $"invoice_{paymentId}.pdf";
+                    return File(pdfBytes, "application/pdf", fileName);
+                }
+                catch (Exception ex)
+                {
+                    return StatusCode(500, $"Error regenerating invoice: {ex.Message}");
+                }
+            }
+
+            Console.WriteLine("Invoice download triggered");
+            Console.WriteLine("Email from session: " + email);
+            Console.WriteLine("PaymentId from URL: " + paymentId);
+
+            if (enrollment == null)
+                Console.WriteLine("No enrollment found.");
+            else
+                Console.WriteLine("Enrollment found. Invoice path: " + enrollment.InvoicePath);
+
+
+            // If file exists but wasn't in cache
+            var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            _cache.Set($"invoice_{paymentId}", fileBytes, TimeSpan.FromHours(1));
+            return File(fileBytes, "application/pdf", $"invoice_{paymentId}.pdf");
+        }
 
 
     }

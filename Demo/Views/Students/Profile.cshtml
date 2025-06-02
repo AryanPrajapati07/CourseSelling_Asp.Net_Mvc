@@ -837,11 +837,9 @@
 									<td>@item.Course.Instructor</td>
 									@* <td>@item.Student.Name</td> *@
 									<td>
-										
-											<a href="@Url.Action("DownloadInvoice", "Students", new { paymentId = item.Enrollment.PaymentId })">
-												Download Invoice
-											</a>
-										
+										<a href="@Url.Action("DownloadInvoice", "Students", new { paymentId = item.Enrollment.PaymentId })" class="action-btn primary">
+											Download Invoice
+										</a>
 									</td>
 
 								</tr>
@@ -858,6 +856,8 @@
 				</div>
 			}
 		</div>
+
+
 
 		<!-- Statistics Section -->
 		<div class="stats-grid">
@@ -882,6 +882,7 @@
 	</div>
 
 	<script>
+				
 		// Enhanced functionality
 		function handleAction(action) {
 			console.log('Action triggered:', action);

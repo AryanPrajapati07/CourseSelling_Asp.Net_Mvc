@@ -135,6 +135,13 @@ namespace Demo.Controllers
             return context.Instructors.ToList();
         }
 
+        public IActionResult PaymentList()
+        {
+            List<Enrollment> enrollments = context.Enrollments.ToList();
+            return View(enrollments); 
+            //return View();
+        }
+
 
     }
 
