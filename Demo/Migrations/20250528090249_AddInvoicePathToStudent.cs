@@ -18,11 +18,11 @@ namespace Demo.Migrations
             //    name: "RazorpayPaymentId",
             //    table: "Students");
 
-            migrationBuilder.AddColumn<string>(
-                name: "InvoicePath",
-                table: "Students",
-                type: "nvarchar(max)",
-                nullable: true);
+            //migrationBuilder.AddColumn<string>(
+            //    name: "InvoicePath",
+            //    table: "Students",
+            //    type: "nvarchar(max)",
+            //    nullable: true);
         }
 
         /// <inheritdoc />

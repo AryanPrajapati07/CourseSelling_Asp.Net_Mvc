@@ -15,7 +15,8 @@ builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new 
 builder.Services.AddScoped<InvoiceService>();
 
 //builder.Services.AddSingleton<InvoiceService>();
-
+// Add this with your other service registrations
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddSession();
 

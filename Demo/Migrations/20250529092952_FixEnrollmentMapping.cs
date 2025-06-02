@@ -10,12 +10,12 @@ namespace Demo.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "InvoicePath",
-                table: "Enrollments",
-                type: "nvarchar(max)",
-                nullable: true,
-                defaultValue: "");
+            //migrationBuilder.AddColumn<string>(
+            //    name: "InvoicePath",
+            //    table: "Enrollments",
+            //    type: "nvarchar(max)",
+            //    nullable: true,
+            //    defaultValue: "");
 
             migrationBuilder.AddColumn<int>(
                 name: "StudentId",

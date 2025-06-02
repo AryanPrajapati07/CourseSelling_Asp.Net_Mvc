@@ -2,9 +2,12 @@
 using System.Net.Mail;
 using Demo.Models;
 using Demo.Services;
+using Intuit.Ipp.Core.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+
 
 
 
@@ -15,6 +18,9 @@ namespace Demo.Controllers
     {
         private readonly ApplicationDbContext context;
         private readonly InvoiceService invoiceService;
+        private readonly IMemoryCache _cache;
+        private readonly IEmailService _emailService;
+
 
         //country and states data
         private static readonly Dictionary<string, List<string>> CountryStates = new()
@@ -24,15 +30,17 @@ namespace Demo.Controllers
             { "Canada", new List<string> { "Ontario", "Quebec", "British Columbia" } }
 
         };
-       
+
 
         public List<SelectListItem> Countries { get; private set; }
         public List<SelectListItem> States { get; private set; }
 
-        public StudentsController(ApplicationDbContext context, InvoiceService invoiceService)
+        public StudentsController(ApplicationDbContext context, InvoiceService invoiceService, IMemoryCache cache, IEmailService emailService)
         {
             this.context = context;
             this.invoiceService = invoiceService;
+            this._cache = cache;
+            this._emailService = emailService;
         }
 
         //add dashboard page 
@@ -282,7 +290,7 @@ namespace Demo.Controllers
 
             var fromAddress = new MailAddress("aryanprajapati5523@gmail.com", "EduMaster");
             var toAddress = new MailAddress(email);
-            const string fromPassword = "bojvatecoqvsxjds"; // Use App Password, not your Gmail password
+            const string fromPassword = "qjqpozuuabxjbqvk"; // Use App Password, not your Gmail password
             const string subject = "Your OTP Code";
             string body = $"Your OTP is: {otp}";
 
@@ -410,7 +418,7 @@ namespace Demo.Controllers
             var course = context.Courses.FirstOrDefault(c => c.Id == id);
 
             var student = context.Students.FirstOrDefault(s => s.Email == User.Identity.Name);
-           
+
 
             ViewBag.StudentName = student?.Name;
             ViewBag.StudentEmail = student?.Email;
@@ -418,7 +426,7 @@ namespace Demo.Controllers
             ViewBag.StudentState = student?.State;
 
 
-            
+
             return View(course);
         }
 
@@ -491,11 +499,15 @@ namespace Demo.Controllers
                 student.Email
             );
 
+
+
             // Save the PDF to wwwroot/invoices
             var invoiceFileName = $"invoice_{paymentId}.pdf";
-            var invoicePath = Path.Combine("wwwroot", "invoices", invoiceFileName);
-            Directory.CreateDirectory(Path.GetDirectoryName(invoicePath));
+            var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "invoices");
+            Directory.CreateDirectory(rootPath);
+            var invoicePath = Path.Combine(rootPath, invoiceFileName);
             await System.IO.File.WriteAllBytesAsync(invoicePath, pdfBytes);
+
 
             // Optionally, store the invoice path in the student record
             var enrollment = new Enrollment
@@ -505,41 +517,88 @@ namespace Demo.Controllers
                 PaymentId = paymentId,
                 Amount = amount,
                 PaymentDate = DateTime.Now,
-                InvoicePath = $"/invoices/{invoiceFileName}"
+                InvoicePath = null
             };
 
-            context.Enrollments.Add(enrollment);
-            context.SaveChanges();
+            var enrollment1 = context.Enrollments
+                .FirstOrDefault(e => e.PaymentId == paymentId && e.StudentEmail == email);
+
+            if (enrollment1 != null)
+            {
+                enrollment1.InvoicePath = $"/invoices/{invoiceFileName}";
+                context.SaveChanges();
+            }
 
 
-            // Optionally, return the PDF as a download
-            // return File(pdfBytes, "application/pdf", invoiceFileName);
+            // Cache the PDF for download later (store in memory for 1 hour)
+            _cache.Set($"invoice_{paymentId}", pdfBytes, TimeSpan.FromHours(1));
 
-            // Or redirect to a profile or invoice page
+            // Optionally, redirect to the download endpoint directly:
+            //return RedirectToAction("DownloadInvoice", new { paymentId });
+
+            try
+            {
+                await _emailService.SendEnrollmentEmailAsync(
+       student.Name,
+       student.Email,
+       course,
+       paymentId,
+       amount);
+            }
+            catch (Exception ex)
+            {
+                // Log the error properly
+                // Consider using ILogger in production
+                TempData["EmailError"] = "Failed to send confirmation email, but your enrollment was successful.";
+            }
+
             return RedirectToAction("Profile");
         }
 
-        public IActionResult DownloadInvoice(string paymentId)
+
+        //send mail
+        private async Task SendEnrollmentEmailAsync(string studentName, string toEmail, Course course, string paymentId, decimal amount)
         {
-            var email = HttpContext.Session.GetString("StudentEmail");
-            if (string.IsNullOrEmpty(email))
-                return RedirectToAction("StudentLogin");
+            var subject = "Course Enrollment Confirmation";
+            var body = $@"
+        <p>Dear {studentName},</p>
+        <p>Thank you for enrolling in <strong>{course.CourseTitle}</strong>!</p>
+        <ul>
+            <li><strong>Instructor:</strong> {course.Instructor}</li>
+            <li><strong>Hours:</strong> {course.Hours}</li>
+            <li><strong>Amount: ₹</strong> {amount}</li>
+            <li><strong>Payment ID:</strong> {paymentId}</li>
+        </ul>
+        <p>You can view your enrollment and download the invoice anytime from your profile.</p>
+        <p>Best regards,<br/>Learning Platform Team</p>";
 
-            var enrollment = context.Enrollments
-                .FirstOrDefault(e => e.PaymentId == paymentId && e.StudentEmail == email);
+            using (var message = new MailMessage())
+            {
+                message.From = new MailAddress("aryanprajapati5523@gmail.com", "EduMaster");
+                message.To.Add(toEmail);
+                message.Subject = subject;
+                message.Body = body;
+                message.IsBodyHtml = true;
 
-            if (enrollment == null || string.IsNullOrEmpty(enrollment.InvoicePath))
-                return NotFound("Invoice not found.");
+                using (var smtpClient = new SmtpClient("smtp.gmail.com", 587))
+                {
+                    smtpClient.Credentials = new NetworkCredential("aryanprajapati5523@gmail.com", "qjqpozuuabxjbqvk");
+                    smtpClient.EnableSsl = true;
+                    smtpClient.Timeout = 10000; // 10 seconds timeout
 
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", enrollment.InvoicePath.TrimStart('/'));
-            if (!System.IO.File.Exists(filePath))
-                return NotFound("Invoice file not found.");
-
-            var fileBytes = System.IO.File.ReadAllBytes(filePath);
-            var fileName = Path.GetFileName(filePath);
-            return File(fileBytes, "application/pdf", fileName);
+                    try
+                    {
+                        await smtpClient.SendMailAsync(message);
+                    }
+                    catch (SmtpException smtpEx)
+                    {
+                        // Log specific SMTP errors
+                        Console.WriteLine($"SMTP Error: {smtpEx.StatusCode} - {smtpEx.Message}");
+                        throw;
+                    }
+                }
+            }
         }
-
 
 
 
@@ -553,7 +612,7 @@ namespace Demo.Controllers
                 return Json(new { success = false, message = "Session expired. Please log in again." });
             }
 
-           
+
             try
             {
                 var enrollment = new Enrollment
@@ -565,7 +624,7 @@ namespace Demo.Controllers
                     PaymentDate = dto.PaymentDate
                 };
 
-               
+
 
 
                 context.Enrollments.Add(enrollment);
@@ -590,6 +649,39 @@ namespace Demo.Controllers
             public string PaymentId { get; set; }
             public decimal Amount { get; set; }
             public DateTime PaymentDate { get; set; }
+        }
+
+
+
+        public IActionResult DownloadInvoice(string paymentId)
+        {
+            var email = HttpContext.Session.GetString("StudentEmail");
+            if (string.IsNullOrEmpty(email))
+                return RedirectToAction("StudentLogin");
+
+            var enrollment = context.Enrollments
+                .FirstOrDefault(e => e.PaymentId == paymentId && e.StudentEmail == email);
+
+            if (enrollment == null || string.IsNullOrEmpty(enrollment.InvoicePath))
+                return NotFound("Invoice not found.");
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", enrollment.InvoicePath.TrimStart('/'));
+            if (!System.IO.File.Exists(filePath))
+                return NotFound("Invoice file not found.");
+
+
+            //var fileBytes = System.IO.File.ReadAllBytes(filePath);
+            //var fileName = Path.GetFileName(filePath);
+            //return File(fileBytes, "application/pdf", fileName);
+
+
+            if (!_cache.TryGetValue($"invoice_{paymentId}", out byte[] pdfBytes))
+            {
+                return NotFound("Invoice not found in cache.");
+            }
+
+            var fileName = $"invoice_{paymentId}.pdf";
+            return File(pdfBytes, "application/pdf", fileName);
         }
 
 

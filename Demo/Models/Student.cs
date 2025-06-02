@@ -42,7 +42,7 @@ namespace Demo.Models
 
        
             
-            public string? InvoicePath { get; set; }
+            //public string? InvoicePath { get; set; }
 
          public ICollection<Enrollment> Enrollments { get; set; }
         
