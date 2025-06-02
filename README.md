@@ -60,7 +60,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ```
 
----
-
-Let me know if you'd like this README customized with actual features from your codebase (like forms, database models, or screenshots). I can also add a section for invoice generation or Razorpay integration if those features are included or planned.
-```
