@@ -23,6 +23,7 @@
 
   <ItemGroup>
     <PackageReference Include="DinkToPdf" Version="1.0.8" />
+    <PackageReference Include="EPPlus" Version="8.0.5" />
     <PackageReference Include="FluentAssertions" Version="8.3.0" />
     <PackageReference Include="IppDotNetSdkForQuickBooksApiV3" Version="14.7.0" />
     <PackageReference Include="MailKit" Version="4.12.1" />

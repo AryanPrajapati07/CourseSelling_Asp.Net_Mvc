@@ -3,6 +3,8 @@ using Demo.Models;
 using Demo.Services;
 using Microsoft.EntityFrameworkCore;
 using MathNet.Numerics.Distributions;
+using OfficeOpenXml;
+using System.Text;
 
 namespace Demo.Controllers
 {
@@ -141,6 +143,29 @@ namespace Demo.Controllers
             return View(enrollments); 
             //return View();
         }
+
+        //download enrollment csv
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult DownloadCsv()
+        {
+            var enrollments = context.Enrollments.ToList();
+
+            var csv = new StringBuilder();
+            csv.AppendLine("Enrollment ID,Email,Course ID,Payment ID,Amount,Payment Date");
+
+            foreach (var e in enrollments)
+            {
+                csv.AppendLine($"En250{e.Id},{e.StudentEmail},CS250{e.CourseId},{e.PaymentId},₹{e.Amount},{e.PaymentDate:yyyy-MM-dd}");
+            }
+
+            byte[] bytes = Encoding.UTF8.GetBytes(csv.ToString());
+            string fileName = $"EnrollmentData-{DateTime.Now:yyyyMMddHHmmss}.csv";
+
+            return File(bytes, "text/csv", fileName);
+        }
+
+
 
 
     }

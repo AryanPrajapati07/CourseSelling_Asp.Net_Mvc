@@ -410,7 +410,8 @@
 	</style>
 </head>
 <body>
-	<form method="get" asp-controller="Courses" asp-action="PaymentList">
+	
+	
 		<div class="sidebar">
 			<div class="logo">
 				<div class="logo-icon">A</div>
@@ -484,24 +485,32 @@
 			</div>
 
 			<div class="form-container">
-				@* <div class="section-header"> *@
-				@* 	<div class="section-title"> *@
-				@* 		<div class="section-icon">📚</div> *@
-				@* 		Course Enrollment Details *@
-				@* 	</div> *@
-				@* </div> *@
+				
 
 				<div class="search-section">
-					@* <a class="btn btn-primary" asp-controller="Students" asp-action="Dashboard"></a> *@
+					
 
 					<div class="input-group">
 						<input type="text" name="searchCourse" class="form-control" placeholder="Search by Email..." value="@search" />
 						<button type="submit" class="btn btn-primary">🔍 Search</button>
 					</div>
-					<button type="submit" class="btn btn-primary">Download Data</button>
+				<form asp-controller="Courses" asp-action="DownloadCsv" method="post" id="csvDownloadForm">
+					@Html.AntiForgeryToken()
+
+					<button type="submit"
+							class="btn btn-primary d-flex align-items-center gap-2"
+							id="downloadBtn"
+							aria-describedby="downloadHelp">
+						<i class="fas fa-download" aria-hidden="true"></i>
+						<span class="btn-text">Download CSV Data</span>
+						<div class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></div>
+					</button>
+				</form>
+
+					
 					
 				</div>
-
+				<form method="get" asp-controller="Courses" asp-action="PaymentList">
 				<div class="table-container">
 					<table class="table">
 						<thead>
@@ -554,10 +563,31 @@
 						 </tbody> 
 					</table>
 				</div>
+			</form>
+
 			</div>
 
 			
 		
-	</form>
 </body>
 </html>
+
+<script>
+	document.getElementById('csvDownloadForm').addEventListener('submit', function(e) {
+		const btn = document.getElementById('downloadBtn');
+		const btnText = btn.querySelector('.btn-text');
+		const spinner = btn.querySelector('.spinner-border');
+
+		// Show loading state
+		btn.disabled = true;
+		btnText.textContent = 'Preparing Download...';
+		spinner.classList.remove('d-none');
+
+		// Reset button after a delay (adjust based on your server response time)
+		setTimeout(() => {
+			btn.disabled = false;
+			btnText.textContent = 'Download CSV Data';
+			spinner.classList.add('d-none');
+		}, 1000);
+	});
+</script>
