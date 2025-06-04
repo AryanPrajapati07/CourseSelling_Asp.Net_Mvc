@@ -826,24 +826,34 @@
 							</tr>
 						</thead>
 						<tbody>
-							@foreach (var item in enrollments)
+							
+							@foreach (var item in ViewBag.Enrollments)
 							{
 								<tr>
 									<td>@item.Enrollment.CourseId</td>
-									<td>@item.Enrollment.PaymentId</td>
-									<td>@item.Enrollment.Amount.ToString("C")</td>
-									<td>@item.Enrollment.PaymentDate.ToString("MMM dd, yyyy")</td>
-									<td>@item.Course.CourseTitle</td>
-									<td>@item.Course.Instructor</td>
-									@* <td>@item.Student.Name</td> *@
 									<td>
-										<a href="@Url.Action("DownloadInvoice", "Students", new { paymentId = item.Enrollment.PaymentId })" class="action-btn primary">
-											Download Invoice
-										</a>
+										@item.Enrollment.PaymentId
 									</td>
-
+									<td>
+										@item.Enrollment.Amount.ToString("C")
+									</td>
+									<td>
+										@item.Enrollment.PaymentDate.ToString("MMM dd, yyyy")
+									</td>
+									<td>
+										@item.Course.CourseTitle
+									</td>
+									<td>
+										@item.Course.Instructor
+									</td>
+									<td>
+									<a asp-controller="Students" asp-action="DownloadEnrollmentPdf" asp-route-paymentId="@item.Enrollment.PaymentId" class="action-btn primary">
+											Download Invoice
+									</a>
+									</td>
 								</tr>
 							}
+
 
 						</tbody>
 					</table>

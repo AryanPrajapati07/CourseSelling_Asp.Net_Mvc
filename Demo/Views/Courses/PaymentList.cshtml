@@ -498,6 +498,8 @@
 						<input type="text" name="searchCourse" class="form-control" placeholder="Search by Email..." value="@search" />
 						<button type="submit" class="btn btn-primary">🔍 Search</button>
 					</div>
+					<button type="submit" class="btn btn-primary">Download Data</button>
+					
 				</div>
 
 				<div class="table-container">
@@ -510,7 +512,7 @@
 								<th>Payment ID</th>
 								<th>Amount</th>
 								<th>Payment Date</th>
-								<th>Invoice</th>
+								@* <th>Invoice</th> *@
 								
 								
 							</tr>
@@ -527,13 +529,13 @@
 										<td>@courses.PaymentId</td>
 										<td><span class="price">₹@courses.Amount</span></td>
 										<td>@courses.PaymentDate</td>
-										<td>
+										@* <td> *@
 
-											<a href="@Url.Action("DownloadInvoice", "Students", new { paymentId = courses.PaymentId })">
-												View Invoice
-											</a>
+										@* 	<a href="@Url.Action("DownloadInvoice", "Students", new { paymentId = courses.PaymentId })"> *@
+										@* 		View Invoice *@
+										@* 	</a> *@
 
-										</td>
+										@* </td> *@
 									</tr> 
 						 		} 
 						 	} 

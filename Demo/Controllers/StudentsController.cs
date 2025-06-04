@@ -2,6 +2,7 @@
 using System.Net.Mail;
 using Demo.Models;
 using Demo.Services;
+using DinkToPdf.Contracts;
 using Intuit.Ipp.Core.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -20,6 +21,7 @@ namespace Demo.Controllers
         private readonly InvoiceService invoiceService;
         private readonly IMemoryCache _cache;
         private readonly IEmailService _emailService;
+        private readonly IConverter _converter;
 
 
         //country and states data
@@ -35,12 +37,13 @@ namespace Demo.Controllers
         public List<SelectListItem> Countries { get; private set; }
         public List<SelectListItem> States { get; private set; }
 
-        public StudentsController(ApplicationDbContext context, InvoiceService invoiceService, IMemoryCache cache, IEmailService emailService)
+        public StudentsController(ApplicationDbContext context, InvoiceService invoiceService, IMemoryCache cache, IEmailService emailService, IConverter converter)
         {
             this.context = context;
             this.invoiceService = invoiceService;
             this._cache = cache;
             this._emailService = emailService;
+            this._converter = converter;
         }
 
         //add dashboard page 
@@ -474,6 +477,34 @@ namespace Demo.Controllers
             return View(student);
         }
 
+        //private void SendConfirmationEmail(string toEmail, string subject, string body)
+        //{
+        //    var fromEmail = "aryanprajapati5523@gmail.com";
+        //    var password = "qjqpozuuabxjbqvk";
+
+        //    var message = new MailMessage();
+        //    message.From = new MailAddress(fromEmail, "EduMaster");
+        //    message.To.Add(toEmail);
+        //    message.Subject = subject;
+        //    message.Body = body;
+        //    message.IsBodyHtml = true;
+
+        //    try
+        //    {
+        //        using (var smtp = new SmtpClient("smtp.gmail.com", 587))
+        //        {
+        //            smtp.Credentials = new NetworkCredential(fromEmail, password);
+        //            smtp.EnableSsl = true;
+        //            smtp.Send(message);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine("Email Error: " + ex.Message);
+        //        // Or log to file, or show in view temporarily
+        //    }
+
+        //}
 
         //Generate Invoice 
         public async Task<IActionResult> PaymentSuccess(string paymentId, decimal amount, int courseId)
@@ -488,116 +519,41 @@ namespace Demo.Controllers
             if (course == null || student == null)
                 return NotFound();
 
-            var pdfBytes = invoiceService.GenerateInvoice(
-                paymentId,
-                amount,
-                course.CourseTitle,
-                course.Hours,
-                course.Instructor,
-                student.Name,
-                student.Email
-            );
+    //        // Compose email content
+    //        string subject = "Course Enrollment Confirmation";
+    //        string body = $@"
+    //    Dear {student.Name},<br/><br/>
 
-            var invoiceFileName = $"invoice_{paymentId}.pdf";
-            var rootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "invoices");
-            Directory.CreateDirectory(rootPath);
-            var invoicePath = Path.Combine(rootPath, invoiceFileName);
-            await System.IO.File.WriteAllBytesAsync(invoicePath, pdfBytes);
+    //    Thank you for enrolling in <strong>{course.CourseTitle}</strong>.<br/>
+    //    Here are your enrollment details:<br/><br/>
 
-            // 🔥 THIS IS THE MOST CRITICAL FIX 🔥
-            var enrollment = context.Enrollments
-                .FirstOrDefault(e => e.PaymentId == paymentId && e.StudentEmail == student.Email);
+    //    <strong>Payment ID:</strong> {paymentId}<br/>
+    //    <strong>Amount Paid:</strong> ₹{amount}<br/>
+    //    <strong>Course Duration:</strong> {course.Hours} Hours<br/>
+    //    <strong>Instructor:</strong> {course.Instructor}<br/>
+    //    <strong>Enrollment Date:</strong> {DateTime.Now:MMMM dd, yyyy}<br/><br/>
 
-            if (enrollment == null)
-            {
-                // If not found, create new
-                enrollment = new Enrollment
-                {
-                    StudentEmail = student.Email,
-                    CourseId = course.Id,
-                    PaymentId = paymentId,
-                    Amount = amount,
-                    PaymentDate = DateTime.Now,
-                    InvoicePath = $"/invoices/{invoiceFileName}"
-                };
-                context.Enrollments.Add(enrollment);
-            }
-            else
-            {
-                // If already exists, update the InvoicePath
-                enrollment.InvoicePath = $"/invoices/{invoiceFileName}";
-                context.Enrollments.Update(enrollment); // ✅ Required to track the update
-            }
+    //    If you have any questions, feel free to contact us at support@yourplatform.com.<br/><br/>
 
-            await context.SaveChangesAsync(); // ✅ MUST be async to persist update
+    //    Best regards,<br/>
+    //    EduMaster Team
+    //";
 
-            // Cache for faster download
-            _cache.Set($"invoice_{paymentId}", pdfBytes, TimeSpan.FromHours(1));
+    //        // Send email
+    //        SendConfirmationEmail(student.Email, subject, body);
 
-            try
-            {
-                await _emailService.SendEnrollmentEmailAsync(
-                    student.Name,
-                    student.Email,
-                    course,
-                    paymentId,
-                    amount
-                );
-            }
-            catch
-            {
-                TempData["EmailError"] = "Failed to send confirmation email, but enrollment is successful.";
-            }
-
+    //        ViewBag.EmailStatus = "Confirmation email sent to " + student.Email;
             return RedirectToAction("Profile");
+
+            //return RedirectToAction("Profile");
         }
+        
 
 
 
 
         //send mail
-        private async Task SendEnrollmentEmailAsync(string studentName, string toEmail, Course course, string paymentId, decimal amount)
-        {
-            var subject = "Course Enrollment Confirmation";
-            var body = $@"
-        <p>Dear {studentName},</p>
-        <p>Thank you for enrolling in <strong>{course.CourseTitle}</strong>!</p>
-        <ul>
-            <li><strong>Instructor:</strong> {course.Instructor}</li>
-            <li><strong>Hours:</strong> {course.Hours}</li>
-            <li><strong>Amount: ₹</strong> {amount}</li>
-            <li><strong>Payment ID:</strong> {paymentId}</li>
-        </ul>
-        <p>You can view your enrollment and download the invoice anytime from your profile.</p>
-        <p>Best regards,<br/>Learning Platform Team</p>";
 
-            using (var message = new MailMessage())
-            {
-                message.From = new MailAddress("aryanprajapati5523@gmail.com", "EduMaster");
-                message.To.Add(toEmail);
-                message.Subject = subject;
-                message.Body = body;
-                message.IsBodyHtml = true;
-
-                using (var smtpClient = new SmtpClient("smtp.gmail.com", 587))
-                {
-                    smtpClient.Credentials = new NetworkCredential("aryanprajapati5523@gmail.com", "qjqpozuuabxjbqvk");
-                    smtpClient.EnableSsl = true;
-                    smtpClient.Timeout = 10000; // 10 seconds timeout
-
-                    try
-                    {
-                        await smtpClient.SendMailAsync(message);
-                    }
-                    catch (SmtpException smtpEx)
-                    {
-                        // Log specific SMTP errors
-                        Console.WriteLine($"SMTP Error: {smtpEx.StatusCode} - {smtpEx.Message}");
-                        throw;
-                    }
-                }
-            }
-        }
 
 
 
@@ -652,91 +608,69 @@ namespace Demo.Controllers
 
 
 
-        public async Task<IActionResult> DownloadInvoiceAsync(string paymentId)
+        public async Task<IActionResult> DownloadEnrollmentPdf(string paymentId)
         {
-
-
-
             var email = HttpContext.Session.GetString("StudentEmail");
             if (string.IsNullOrEmpty(email))
                 return RedirectToAction("StudentLogin");
-            var enrollment = context.Enrollments
-                .FirstOrDefault(e => e.PaymentId == paymentId && e.StudentEmail == email);
 
+            var enrollment = context.Enrollments.FirstOrDefault(e => e.PaymentId == paymentId && e.StudentEmail == email);
             if (enrollment == null)
-            {
-                return NotFound("Enrollment not found for the given payment ID and student.");
-            }
+                return NotFound("Enrollment not found.");
+
+            var student = context.Students.FirstOrDefault(s => s.Email == email);
+            var course = context.Courses.FirstOrDefault(c => c.Id == enrollment.CourseId);
+
+            if (student == null || course == null)
+                return NotFound("Required data not found.");
+
+            var pdfBytes = invoiceService.GenerateInvoice(
+                enrollment.PaymentId,
+                enrollment.Amount,
+                course.CourseTitle,
+                course.Hours,
+                course.Instructor,
+                student.Name,
+                student.Email
+            );
+
+
+            string subject = "Your Course Enrollment Invoice";
+            string body = $@"
+<p>Dear {student.Name},</p>
+
+<p>Thank you for enrolling in <strong>{course.CourseTitle}</strong>.</p>
+
+<p><strong>Here are your invoice details:</strong></p>
+<ul>
+    <li><strong>Payment ID:</strong> {enrollment.PaymentId}</li>
+    <li><strong>Amount Paid:</strong> ₹{enrollment.Amount}</li>
+    <li><strong>Course Title:</strong> {course.CourseTitle}</li>
+    <li><strong>Course Duration:</strong> {course.Hours} Hours</li>
+    <li><strong>Instructor:</strong> {course.Instructor}</li>
+    <li><strong>Student Name:</strong> {student.Name}</li>
+    <li><strong>Enrollment Date:</strong> {DateTime.Now:MMMM dd, yyyy}</li>
+</ul>
+
+<p>If you have any questions, feel free to contact us at <a href='mailto:aryanprajapati5523@gmail.com'>support@edumaster.com</a>.</p>
+
+<br/>
+<p>Best regards,<br/>EduMaster Team</p>";
+
+
+            invoiceService.SendInvoiceEmail(email, subject, body, pdfBytes);
 
 
 
-            // First try to get from cache
-            if (_cache.TryGetValue($"invoice_{paymentId}", out byte[] pdfBytes))
-            {
-                var fileName = $"invoice_{paymentId}.pdf";
-                return File(pdfBytes, "application/pdf", fileName);
-            }
-
-            if (string.IsNullOrEmpty(enrollment.InvoicePath))
-            {
-                return NotFound("Invoice path is missing.");
-            }
+            var fileName = $"enrollment_{paymentId}.pdf";
 
 
 
-            // If not in cache, try to read from file system
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", enrollment.InvoicePath.TrimStart('/'));
+            return File(pdfBytes, "application/pdf", fileName);
 
-            if (!System.IO.File.Exists(filePath))
-            {
-                // If file doesn't exist, try to regenerate it
-                try
-                {
-                    var student = context.Students.FirstOrDefault(s => s.Email == email);
-                    var course = context.Courses.FirstOrDefault(c => c.Id == enrollment.CourseId);
+            
 
-                    if (student == null || course == null)
-                        return NotFound("Required data not found to regenerate invoice.");
-
-                    pdfBytes = invoiceService.GenerateInvoice(
-                        enrollment.PaymentId,
-                        enrollment.Amount,
-                        course.CourseTitle,
-                        course.Hours,
-                        course.Instructor,
-                        student.Name,
-                        student.Email
-                    );
-
-                    // Save the regenerated file
-                    await System.IO.File.WriteAllBytesAsync(filePath, pdfBytes);
-
-                    // Cache the regenerated PDF
-                    _cache.Set($"invoice_{paymentId}", pdfBytes, TimeSpan.FromHours(1));
-
-                    var fileName = $"invoice_{paymentId}.pdf";
-                    return File(pdfBytes, "application/pdf", fileName);
-                }
-                catch (Exception ex)
-                {
-                    return StatusCode(500, $"Error regenerating invoice: {ex.Message}");
-                }
-            }
-
-            Console.WriteLine("Invoice download triggered");
-            Console.WriteLine("Email from session: " + email);
-            Console.WriteLine("PaymentId from URL: " + paymentId);
-
-            if (enrollment == null)
-                Console.WriteLine("No enrollment found.");
-            else
-                Console.WriteLine("Enrollment found. Invoice path: " + enrollment.InvoicePath);
-
-
-            // If file exists but wasn't in cache
-            var fileBytes = System.IO.File.ReadAllBytes(filePath);
-            _cache.Set($"invoice_{paymentId}", fileBytes, TimeSpan.FromHours(1));
-            return File(fileBytes, "application/pdf", $"invoice_{paymentId}.pdf");
+           
         }
 
 

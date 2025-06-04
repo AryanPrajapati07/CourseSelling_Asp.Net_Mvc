@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using DinkToPdf;
 using DinkToPdf.Contracts;
 using MathNet.Numerics;
+using FluentAssertions.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,10 +12,18 @@ builder.Services.AddMemoryCache();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-builder.Services.AddScoped<InvoiceService>();
 
-//builder.Services.AddSingleton<InvoiceService>();
+
+var context = new CustomAssemblyLoadContext();
+string path = Path.Combine(Directory.GetCurrentDirectory(), "libwkhtmltox", "libwkhtmltox.dll");
+context.LoadUnmanagedLibrary(path);
+
+builder.Services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+
+
+
+builder.Services.AddScoped<InvoiceService>();
+//builder.Services.AddControllersWithViews();
 // Add this with your other service registrations
 builder.Services.AddScoped<IEmailService, EmailService>();
 
@@ -47,12 +56,16 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+
+
+
 // Ensure invoices directory exists
 var invoicesDir = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "invoices");
 if (!Directory.Exists(invoicesDir))
 {
     Directory.CreateDirectory(invoicesDir);
 }
+
 
 app.MapControllerRoute(
     name: "default",
