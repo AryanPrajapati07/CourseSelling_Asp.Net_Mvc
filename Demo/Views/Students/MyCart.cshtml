@@ -1,0 +1,226 @@
+﻿@model List<Course>
+
+<html>
+<head>
+    <!-- Include Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: white;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            margin: 2rem auto;
+            max-width: 1000px;
+        }
+
+        .cart-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 20px 20px 0 0;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .cart-item {
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .cart-item:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            }
+
+        .course-image {
+            width: 120px;
+            height: 80px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+        }
+
+        .btn-custom {
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-remove {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            border: none;
+            color: white;
+        }
+
+            .btn-remove:hover {
+                transform: scale(1.05);
+                box-shadow: 0 5px 15px rgba(238, 90, 36, 0.4);
+            }
+
+        .btn-enroll {
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            border: none;
+            color: white;
+        }
+
+            .btn-enroll:hover {
+                transform: scale(1.05);
+                box-shadow: 0 5px 15px rgba(58, 123, 213, 0.4);
+            }
+
+        .price-tag {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #6c757d;
+        }
+
+            .empty-cart i {
+                font-size: 5rem;
+                margin-bottom: 2rem;
+                opacity: 0.3;
+            }
+
+        .browse-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+            .browse-btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+            }
+
+        (max-width: 768px) {
+            .main-container
+
+        {
+            margin: 1rem;
+            border-radius: 15px;
+        }
+
+        .cart-header {
+            border-radius: 15px 15px 0 0;
+        }
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <div class="main-container">
+            <!-- Header Section -->
+            <div class="cart-header">
+                <h1 class="mb-2">My Cart</h1>
+                @if (Model.Any())
+                {
+                    <p class="mb-0 opacity-75">
+                        @Model.Count() @(Model.Count() == 1 ? "course" : "courses") in your cart
+                    </p>
+                }
+            </div>
+
+            <div class="p-4">
+                @if (!Model.Any())
+                {
+                    <!-- Empty Cart State -->
+                    <div class="empty-cart">
+                        <i class="fas fa-shopping-cart"></i>
+                        <h3 class="mb-3">Your cart is empty</h3>
+                        <p class="mb-4">Start learning today by adding courses to your cart!</p>
+                        <a href="#" class="btn browse-btn">
+                            <i class="fas fa-search me-2"></i>Browse Courses
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <!-- Cart Items -->
+                    @foreach (var item in Model)
+                    {
+                        <div class="cart-item">
+                            <div class="row align-items-center">
+                                <!-- Course Image -->
+                                <div class="col-md-2 mb-3 mb-md-0">
+                                    <div class="course-image">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Course Details -->
+                                <div class="col-md-6">
+                                    <h5 class="mb-2 text-dark">@item.CourseTitle</h5>
+                                    <p class="text-muted mb-0">
+                                        <i class="fas fa-user me-1"></i>@item.Instructor
+                                        
+                                    </p>
+                                    <p class="text-muted mb-0">
+                                        <i class="fas fa-clock me-1"></i>@item.Hours Hours
+
+                                    </p>
+                                </div>
+
+                                <!-- Price and Actions -->
+                                <div class="col-md-4 text-end">
+                                    <div class="mb-3">
+                                        <span class="price-tag">@item.Price.ToString("C")</span>
+                                    </div>
+                                    <div class="d-flex flex-column gap-2">
+                                        <a asp-controller="Students" asp-action="CourseDetails" asp-route-id="@item.Id"
+                                           class="btn btn-custom btn-enroll btn-sm">
+                                            <i class="fas fa-graduation-cap me-1"></i>Enroll Now
+                                        </a>
+                                        <a asp-action="RemoveFromCart" asp-route-id="@item.Id"
+                                           class="btn btn-custom btn-remove btn-sm"
+                                           onclick="return confirm('Remove this course from your cart?')">
+                                            <i class="fas fa-trash me-1"></i>Remove From Cart
+                                        </a>
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function moveToWishlist(courseId) {
+            // Implementation for moving item to wishlist
+            alert('Course moved to wishlist!');
+        }
+    </script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Net.Mail;
+using System.Text.Json;
 using Demo.Models;
 using Demo.Services;
 using DinkToPdf.Contracts;
@@ -545,7 +546,7 @@ namespace Demo.Controllers
     //        ViewBag.EmailStatus = "Confirmation email sent to " + student.Email;
             return RedirectToAction("Profile");
 
-            //return RedirectToAction("Profile");
+            
         }
         
 
@@ -667,11 +668,49 @@ namespace Demo.Controllers
 
 
             return File(pdfBytes, "application/pdf", fileName);
-
-            
-
-           
+ 
         }
+
+        public IActionResult MyCart()
+        {
+
+
+            var cart = HttpContext.Session.GetObject<List<Course>>("Cart") ?? new List<Course>();
+            return View(cart);
+        }
+
+
+        //Add to cart
+        public IActionResult AddToCart(int id)
+        {
+
+            var course = context.Courses.FirstOrDefault(c => c.Id == id);
+            if (course == null)
+                return NotFound();
+
+            var cart = HttpContext.Session.GetObject<List<Course>>("Cart") ?? new List<Course>();
+
+            if (!cart.Any(c => c.Id == id))
+            {
+                cart.Add(course);
+                HttpContext.Session.SetObject("Cart", cart);
+            }
+
+            return RedirectToAction("MyCart");
+        }
+        public IActionResult RemoveFromCart(int id)
+        {
+            var cart = HttpContext.Session.GetObject<List<Course>>("Cart") ?? new List<Course>();
+            var courseToRemove = cart.FirstOrDefault(c => c.Id == id);
+            if (courseToRemove != null)
+            {
+                cart.Remove(courseToRemove);
+                HttpContext.Session.SetObject("Cart", cart);
+            }
+            return RedirectToAction("MyCart");
+        }
+
+
 
 
     }

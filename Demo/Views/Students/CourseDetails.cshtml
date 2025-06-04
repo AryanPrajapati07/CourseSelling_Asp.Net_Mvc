@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <title>Course Details - @Model.CourseTitle</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -14,275 +15,648 @@
         }
 
         body {
-            font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(to bottom right, #eef2ff, #f8fafc);
-            color: #1f2937;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #1a202c;
+            line-height: 1.6;
         }
+
+        .hero-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.95), rgba(118, 75, 162, 0.95));
+            padding: 60px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+            .hero-section::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.1)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.05)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+                opacity: 0.3;
+            }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .breadcrumb {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+            .breadcrumb a {
+                color: rgba(255, 255, 255, 0.9);
+                text-decoration: none;
+                transition: color 0.3s ease;
+            }
+
+                .breadcrumb a:hover {
+                    color: #fff;
+                }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 15px;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 30px;
+            animation: slideInUp 0.8s ease-out 0.2s both;
+        }
+
+        .hero-meta {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+            animation: slideInUp 0.8s ease-out 0.4s both;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+            .meta-item i {
+                color: #fbbf24;
+            }
 
         .container {
-            max-width: 1100px;
-            margin: 40px auto;
-            padding: 30px;
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+            max-width: 1200px;
+            margin: -60px auto 40px;
+            padding: 0 30px;
             position: relative;
+            z-index: 2;
         }
 
-        h1 {
-            font-size: 2.4rem;
-            margin-bottom: 10px;
-            color: #1e3a8a;
+        .main-content {
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
         }
 
-        .subtitle {
-            font-size: 1.1rem;
-            color: #6366f1;
-            margin-bottom: 25px;
-        }
-
-        .media-top {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 30px;
-            margin-bottom: 30px;
+        .media-gallery {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            min-height: 400px;
         }
 
         .media-item {
-            flex: 1 1 45%;
-            text-align: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
         }
 
             .media-item img,
             .media-item video {
-                max-width: 100%;
-                border-radius: 10px;
-                margin-top: 12px;
-                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             }
 
-                .media-item img:hover,
-                .media-item video:hover {
-                    transform: scale(1.02);
-                    box-shadow: 0 10px 24px rgba(99, 102, 241, 0.25);
-                }
+            .media-item:hover img,
+            .media-item:hover video {
+                transform: scale(1.08);
+            }
 
-        .details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px 40px;
-            margin-bottom: 30px;
+        .media-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
         }
 
-            .details label {
-                font-weight: 600;
-                display: block;
-                margin-bottom: 4px;
-                color: #374151;
+        .content-section {
+            padding: 50px;
+        }
+
+        .price-enrollment {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8fafc, #edf2f7);
+            border-radius: 16px;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .price-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .price-tag {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #667eea;
+            text-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+        }
+
+        .price-note {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .enroll-button {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            padding: 18px 36px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 50px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+            .enroll-button::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+                transition: left 0.6s;
             }
 
-        .value {
-            font-size: 1rem;
-            color: #4b5563;
+            .enroll-button:hover::before {
+                left: 100%;
+            }
+
+            .enroll-button:hover {
+                transform: translateY(-3px) scale(1.05);
+                box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+            }
+
+            .enroll-button:active {
+                transform: translateY(-1px) scale(1.02);
+            }
+
+        .section {
+            margin-bottom: 40px;
+            animation: fadeInUp 0.6s ease-out;
         }
 
         .section-title {
-            font-size: 1.25rem;
-            margin: 30px 0 10px;
-            border-left: 5px solid #6366f1;
-            padding-left: 12px;
-            color: #1e40af;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .info-box {
-            background: #f1f5f9;
-            padding: 16px 20px;
-            border-radius: 8px;
-            font-size: 1rem;
-            line-height: 1.6;
-            color: #1f2937;
-        }
-
-        .enroll-button {
-            display: inline-block;
-            background: linear-gradient(135deg, #4f46e5, #3b82f6);
-            color: #fff;
-            padding: 14px 28px;
-            margin-bottom:-5%;
-            font-size: 1.1rem;
-            font-weight: 600;
-            border: none;
-            border-radius: 50px;
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.25);
-            text-decoration: none;
-            position: absolute;
-            bottom: 20px;
-            right: 30px;
-            transition: background 0.3s ease, transform 0.2s ease;
-        }
-
-            .enroll-button:hover {
-                background: linear-gradient(135deg, #4338ca, #2563eb);
-                color:black;
-                transform: scale(1.03);
+            .section-title i {
+                color: #667eea;
+                font-size: 1.2rem;
             }
 
-        media (max-width: 900px) {
-            .media-top
-
-        {
-            flex-direction: column;
+        .section-content {
+            background: #f8fafc;
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: #4a5568;
         }
 
-        .details {
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .detail-card {
+            background: linear-gradient(135deg, #fff, #f8fafc);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            transition: all 0.3s ease;
+        }
+
+            .detail-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            }
+
+        .detail-label {
+            font-size: 0.85rem;
+            color: #667eea;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .detail-value {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .floating-elements {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            animation: float 6s ease-in-out infinite;
+        }
+
+            .floating-circle:nth-child(1) {
+                width: 80px;
+                height: 80px;
+                top: 20%;
+                left: 10%;
+                animation-delay: 0s;
+            }
+
+            .floating-circle:nth-child(2) {
+                width: 120px;
+                height: 120px;
+                top: 60%;
+                right: 15%;
+                animation-delay: 2s;
+            }
+
+            .floating-circle:nth-child(3) {
+                width: 60px;
+                height: 60px;
+                bottom: 20%;
+                left: 20%;
+                animation-delay: 4s;
+            }
+
+        slideInUp {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+         fadeInUp {
+            from
+
+        {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        }
+
+        float {
+            0%, 100%
+
+        {
+            transform: translateY(0px) rotate(0deg);
+        }
+
+        50% {
+            transform: translateY(-20px) rotate(180deg);
+        }
+
+        }
+
+         (max-width: 768px) {
+            .hero-title
+
+        {
+            font-size: 2.5rem;
+        }
+
+        .hero-meta {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .media-gallery {
             grid-template-columns: 1fr;
         }
 
-        .enroll-button {
-            
-            position: static;
-            display: block;
-            margin: 30px auto 0 auto;
+        .content-section {
+            padding: 30px 25px;
+        }
+
+        .price-enrollment {
+            flex-direction: column;
+            gap: 20px;
             text-align: center;
         }
 
+        .details-grid {
+            grid-template-columns: 1fr;
         }
 
-        media (max-width: 600px) {
-            .container
+        .container {
+            margin: -40px auto 20px;
+            padding: 0 20px;
+        }
+
+        }
+
+         (max-width: 480px) {
+            .hero-content
 
         {
-            padding: 20px;
-            margin: 20px;
+            padding: 0 20px;
         }
 
-        h1 {
-            font-size: 1.8rem;
+        .hero-title {
+            font-size: 2rem;
         }
 
-        .subtitle {
-            font-size: 1rem;
+        .content-section {
+            padding: 20px 15px;
         }
 
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="media-top">
-            @if (!string.IsNullOrEmpty(Model.ImagePath))
-            {
-                <div class="media-item">
-                    <div class="section-title">Course Image</div>
-                    <img src="@Url.Content($"~{Model.ImagePath}")" alt="Course Image" />
-                </div>
-            }
-
-            @if (!string.IsNullOrEmpty(Model.VideoPath))
-            {
-                <div class="media-item">
-                    <div class="section-title">Course Preview Video</div>
-                    <video controls>
-                        <source src="@Url.Content($"~{Model.VideoPath}")" type="video/mp4" />
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-            }
-        </div>
-
-        <h1>@Model.CourseTitle</h1>
-        <div class="subtitle">@Model.Category &bull; @Model.Level</div>
-
-        <div class="details">
-            <div>
-                <label>Instructor</label>
-                <div class="value">@Model.Instructor</div>
-            </div>
-            <div>
-                <label>Duration</label>
-                <div class="value">@Model.Hours hours</div>
-            </div>
-        </div>
-
-        <div class="section-title">Description</div>
-        <div class="info-box">@Model.Description</div>
-
-        <div class="section-title">Requirements</div>
-        <div class="info-box">@Model.Requirements</div>
-
-        <div class="section-title">What You Will Learn</div>
-        <div class="info-box">@Model.WhatLearn</div>
-
-        @* <a href="#" class="enroll-button">Enroll Now for ₹@Model.Price</a> *@
-
-        <button id="enrollBtn" class="enroll-button" type="button">
-            Enroll Now for ₹@Model.Price
-        </button>
-
-
-        @* RAZORPAY_KEY = 'rzp_test_kLX7L8BYDbH8a2' *@
-        @* RAZORPAY_SECRET = 'bqFMooSdJGjmiE7JagpU9YZS' *@
-
-
+    <div class="floating-elements">
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
     </div>
-</body>
-</html>
 
+    <section class="hero-section">
+        <div class="hero-content">
+            
 
+            <h1 class="hero-title">@Model.CourseTitle</h1>
+            <p class="hero-subtitle">Master new skills with expert instruction and hands-on learning</p>
 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script>
-    document.getElementById('enrollBtn').onclick = function (e) {
-        e.preventDefault();
+            <div class="hero-meta">
+                <div class="meta-item">
+                    <i class="fas fa-user"></i>
+                    <span>@Model.Instructor</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-clock"></i>
+                    <span>@Model.Hours hours</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-tag"></i>
+                    <span>@Model.Category</span>
+                </div>
+                <div class="meta-item">
+                    <i class="fas fa-signal"></i>
+                    <span>@Model.Level</span>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        var options = {
-            "key": "rzp_test_kLX7L8BYDbH8a2",
-            "amount": @((int)(Model.Price * 100)),
-            "currency": "INR",
-            "name": "@Model.CourseTitle",
-            "description": "Course Enrollment",
-            "image": "@Url.Content($"~{Model.ImagePath}")",
-            "handler": function (response) {
-                const payload = {
-                    courseId: @Model.Id,
-                    paymentId: response.razorpay_payment_id,
-                    amount: @Model.Price,
-                    paymentDate: new Date().toISOString()
-                };
+    <div class="container">
+        <div class="main-content">
+            @* @if (!string.IsNullOrEmpty(Model.ImagePath) || !string.IsNullOrEmpty(Model.VideoPath)) *@
+            @* { *@
+            @*     <div class="media-gallery"> *@
+            @*         @if (!string.IsNullOrEmpty(Model.ImagePath)) *@
+            @*         { *@
+            @*             <div class="media-item"> *@
+            @*                 <img src="@Url.Content($"~{Model.ImagePath}")" alt="@Model.CourseTitle" /> *@
+            @*                 <div class="media-overlay">Course Preview</div> *@
+            @*             </div> *@
+            @*         } *@
 
-                console.log("Sending to server:", payload); // ✅ Debug log
+            @*         @if (!string.IsNullOrEmpty(Model.VideoPath)) *@
+            @*         { *@
+            @*             <div class="media-item"> *@
+            @*                 <video controls> *@
+            @*                     <source src="@Url.Content($"~{Model.VideoPath}")" type="video/mp4" /> *@
+            @*                     Your browser does not support the video tag. *@
+            @*                 </video> *@
+            @*                 <div class="media-overlay"> *@
+            @*                     <i class="fas fa-play"></i> Preview Video *@
+            @*                 </div> *@
+            @*             </div> *@
+            @*         } *@
+            @*     </div> *@
+            @* } *@
 
-                fetch('/Students/Enroll', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("Enrollment successful! Payment ID: " + response.razorpay_payment_id);
-                        window.location.href = '/Students/Profile';
-                    } else {
-                        alert("Enrollment failed: " + data.message);
-                    }
-                })
-                .catch(err => alert("Error contacting server: " + err));
-            },
-            "prefill": {
-                "name": "@ViewBag.StudentName",
-                "email": "@ViewBag.StudentEmail"
-            },
-            "theme": {
-                "color": "#4f46e5"
-            }
+            <div class="content-section">
+                <div class="price-enrollment">
+                    <div class="price-info">
+                        <div class="price-tag">₹@Model.Price</div>
+                        <div class="price-note">One-time payment<br>Lifetime access</div>
+                    </div>
+                    <button id="enrollBtn" class="enroll-button" type="button">
+                        <i class="fas fa-graduation-cap"></i> Enroll Now
+                    </button>
+                </div>
+
+                <div class="details-grid">
+                    <div class="detail-card">
+                        <div class="detail-label">Instructor</div>
+                        <div class="detail-value">@Model.Instructor</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label">Duration</div>
+                        <div class="detail-value">@Model.Hours Hours</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label">Category</div>
+                        <div class="detail-value">@Model.Category</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="detail-label">Level</div>
+                        <div class="detail-value">@Model.Level</div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-info-circle"></i>
+                        Course Description
+                    </h2>
+                    <div class="section-content">@Model.Description</div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-clipboard-list"></i>
+                        Requirements
+                    </h2>
+                    <div class="section-content">@Model.Requirements</div>
+                </div>
+
+                <div class="section">
+                    <h2 class="section-title">
+                        <i class="fas fa-lightbulb"></i>
+                        What You Will Learn
+                    </h2>
+                    <div class="section-content">@Model.WhatLearn</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        // Add scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
         };
 
-        var rzp1 = new Razorpay(options);
-        rzp1.open();
-    };
-</script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
 
+        document.querySelectorAll('.section, .detail-card').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
 
+        // Razorpay integration
+        document.getElementById('enrollBtn').onclick = function (e) {
+            e.preventDefault();
 
+            // Add loading state
+            const btn = this;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            btn.disabled = true;
 
+            var options = {
+                "key": "rzp_test_kLX7L8BYDbH8a2",
+                "amount": @((int)(Model.Price * 100)),
+                "currency": "INR",
+                "name": "@Model.CourseTitle",
+                "description": "Course Enrollment",
+                "image": "@Url.Content($"~{Model.ImagePath}")",
+                "handler": function (response) {
+                    const payload = {
+                        courseId: @Model.Id,
+                        paymentId: response.razorpay_payment_id,
+                        amount: @Model.Price,
+                        paymentDate: new Date().toISOString()
+                    };
+
+                    fetch('/Students/Enroll', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Success animation
+                            btn.innerHTML = '<i class="fas fa-check"></i> Success!';
+                            btn.style.background = 'linear-gradient(135deg, #10b981, #059669)';
+
+                            setTimeout(() => {
+                                alert("🎉 Enrollment successful! Payment ID: " + response.razorpay_payment_id);
+                                window.location.href = '/Students/Profile';
+                            }, 1000);
+                        } else {
+                            alert("❌ Enrollment failed: " + data.message);
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
+                        }
+                    })
+                    .catch(err => {
+                        alert("⚠️ Error contacting server: " + err);
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    });
+                },
+                "modal": {
+                    "ondismiss": function() {
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    }
+                },
+                "prefill": {
+                    "name": "@ViewBag.StudentName",
+                    "email": "@ViewBag.StudentEmail"
+                },
+                "theme": {
+                    "color": "#667eea"
+                }
+            };
+
+            var rzp1 = new Razorpay(options);
+            rzp1.open();
+        };
+
+        // Add smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
