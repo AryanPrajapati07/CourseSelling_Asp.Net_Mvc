@@ -1,8 +1,8 @@
-﻿@model IEnumerable<Demo.Models.Course>
+﻿@model Demo.Models.Course
 
 
 @{
-	
+
 
 }
 
@@ -39,7 +39,7 @@
 
 		/* Header and Navigation */
 		header {
-			width:100%;
+			width: 100%;
 			background-color: #ffffff;
 			box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 			position: sticky;
@@ -48,7 +48,6 @@
 		}
 
 		.navbar {
-			
 			display: flex;
 			justify-content: space-between;
 			align-items: center;
@@ -332,7 +331,7 @@
 			background-color: #4361ee;
 			color: white;
 			padding: 12px 25px;
-			font-style:bold;
+			font-style: bold;
 			border-radius: 6px;
 			font-weight: 600;
 			cursor: pointer;
@@ -343,7 +342,7 @@
 
 			.enroll-btn:hover {
 				background-color: #3a56d4;
-				color:darkblue;
+				color: darkblue;
 			}
 
 
@@ -559,92 +558,56 @@
 				</a>
 				<ul class="nav-links">
 					<li><a asp-controller="Students" asp-action="StudentHome">Home</a></li>
-					<li><a asp-controller="Students" asp-action="StudentCourses" class="active">Courses</a></li>
+					<li><a asp-controller="Students" asp-action="StudentCourses">Courses</a></li>
 
-					<li><a asp-controller="Students" asp-action="StudentDashboard">Dashboard</a></li>
-
+					<li><a asp-controller="Students" asp-action="StudentDashboard" class="active">Dashboard</a></li>
 					<li><a href="#">About Us</a></li>
-					
+
 					<li><a asp-controller="Students" asp-action="MyCart">My Cart</a></li>
-					
+
 					<li><a asp-controller="Students" asp-action="Profile">Profile</a></li>
 
 				</ul>
-				
+
 			</nav>
 		</div>
 	</header>
 
 	<!-- Hero Section -->
 	<div class="container">
-		
 
-		@if (Model != null && Model.Any())
-		{
-			foreach (var course in Model)
-			{
-				// Render course details
-			}
-		}
-		else
-		{
-			<p>No courses available.</p>
-		}
+
 
 		<!-- Featured Course Section -->
-		
-		<section>
-			<h2 class="section-title">Featured Course</h2>
-			<div class="courses-row">
-				@foreach (var course in Model)
-				{
-					<div class="course-card">
-						<div class="course-image">
-							<img src="@(course.ImagePath ?? "/api/placeholder/800/500")" alt="@course.CourseTitle">
-							<span class="course-badge">4.7 &#9733;</span>
-						</div>
-						<div class="course-details">
-							<div class="course-instructor">
-								<div class="instructor-info">
-									<div class="instructor-name">@course.Instructor - Senior Instructor</div>
-								</div>
-							</div>
-							<h3 class="course-title">@course.CourseTitle</h3>
-							<p class="course-description">
-								@course.Description
-							</p>
-							<div class="course-stats">
-								<div class="stat">
-									<span class="stat-value">@course.Hours</span>
-									<span class="stat-label">Hours</span>
-								</div>
-								<div class="stat">
-									<span class="stat-value">@course.Level</span>
-									<span class="stat-label">Level</span>
-								</div>
-								<div class="stat">
-									<span class="stat-value">@course.Category</span>
-									<span class="stat-label">Category</span>
-								</div>
-							</div>
-							<div class="course-footer">
-								<div class="price">@course.Price.ToString("C")</div>
-								<a asp-controller="Students" asp-action="AddToCart" asp-route-id="@course.Id" class="enroll-btn">
-									<i class="fas fa-shopping-cart me-1"></i>
-									Add To Cart
-								</a>
 
-							</div>
-							<div class="course-footer mt-2">
-								<div class="price"></div>
-								<a asp-controller="Students" asp-action="CourseDetails" asp-route-id="@course.Id" class="enroll-btn" style="width:550px;text-align:center;">
-									<i class="fas fa-graduation-cap me-1"></i>Enroll Now
-								</a>
-								
-							</div>
-						</div>
-					</div>
-				}
+		<section>
+			<h2 class="section-title">Student Dashboard</h2>
+			<div class="courses-row">
+				 @if (!string.IsNullOrEmpty(Model.ImagePath) || !string.IsNullOrEmpty(Model.VideoPath)) 
+             { 
+                 <div class="media-gallery">
+                     @if (!string.IsNullOrEmpty(Model.ImagePath)) 
+                     { 
+                         <div class="media-item"> 
+                            <img src="@Url.Content($"~{Model.ImagePath}")" alt="@Model.CourseTitle" /> 
+                             <div class="media-overlay">Course Preview</div> 
+                         </div> 
+                     } 
+
+                     @if (!string.IsNullOrEmpty(Model.VideoPath)) 
+                     { 
+                         <div class="media-item">
+								<video id ="courseVideo" controls>
+									<source src="@Url.Content($"~{Model.VideoPath}")" type="video/mp4" /> 
+                                 Your browser does not support the video tag. 
+                             </video> 
+                             <div class="media-overlay"> 
+                                 <i class="fas fa-play"></i> Preview Video 
+                            </div> 
+                         </div> 
+                     } 
+                </div> 
+             } 
 			</div>
 		</section>
 
@@ -700,5 +663,29 @@
 	</footer>
 </body>
 </html>
+
+<script>
+	const video = document.getElementById('courseVideo');
+	let watchedTime = 0;
+
+	setInterval(() => {
+		if (!video.paused) {
+			watchedTime += 1;
+
+			fetch('/Student/UpdateWatchTime', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					courseId: @Model.Id,
+					secondsWatched: watchedTime
+				})
+			});
+
+			watchedTime = 0;
+		}
+	}, 5000);
+</script>
 
 

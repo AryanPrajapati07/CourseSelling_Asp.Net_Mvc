@@ -779,27 +779,21 @@
 		</div>
 
 		<!-- Actions Section -->
+
+
 		<div class="actions-section">
 			<h3>Quick Actions</h3>
 			<div class="action-buttons">
-				<button class="action-btn primary" onclick="handleAction('edit-profile')">
+				<a href="" class="action-btn primary" >
 					📝 Edit Profile
-				</button>
-				<button class="action-btn secondary" onclick="handleAction('view-grades')">
+				</a>
+				<a href="" class="action-btn secondary">
 					📊 View Grades
-				</button>
-				<button class="action-btn success" onclick="handleAction('payment-history')">
-					💳 Payment History
-				</button>
-				<button class="action-btn primary" onclick="handleAction('course-enrollment')">
-					📚 Course Enrollment
-				</button>
-				<button class="action-btn secondary" onclick="handleAction('send-message')">
-					📧 Send Message
-				</button>
-				<button class="action-btn success" onclick="handleAction('generate-report')">
-					📋 Generate Report
-				</button>
+				</a>
+				
+				<a href="" class="action-btn success">
+					📋 Enrollments & Payments
+				</a>
 
 
 			</div>
@@ -846,6 +840,7 @@
 									<td>
 										@item.Course.Instructor
 									</td>
+									
 									<td>
 									<a asp-controller="Students" asp-action="DownloadEnrollmentPdf" asp-route-paymentId="@item.Enrollment.PaymentId" class="action-btn primary">
 											Download Invoice
@@ -903,36 +898,7 @@
 			btn.innerHTML = `<span class="loading"></span> Processing...`;
 			btn.disabled = true;
 
-			// Simulate action processing
-			setTimeout(() => {
-				btn.innerHTML = originalText;
-				btn.disabled = false;
-
-				// Handle specific actions
-				switch(action) {
-					case 'edit-profile':
-						// Redirect to edit page or show modal
-						alert('Redirecting to edit profile...');
-						break;
-					case 'view-grades':
-						alert('Loading grades...');
-						break;
-					case 'payment-history':
-						alert('Loading payment history...');
-						break;
-					case 'course-enrollment':
-						alert('Loading course enrollment...');
-						break;
-					case 'send-message':
-						alert('Opening message composer...');
-						break;
-					case 'generate-report':
-						alert('Generating report...');
-						break;
-					default:
-						alert('Action not implemented yet.');
-				}
-			}, 1500);
+			
 		}
 
 		// Function to show debug message if exists

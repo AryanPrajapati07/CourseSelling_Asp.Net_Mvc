@@ -29,7 +29,7 @@
         /* Container */
         .container {
             width: 100%;
-            max-width: 1200px;
+            max-width: 1500px;
             margin: 0 auto;
             padding: 20px 0;
         }
@@ -655,7 +655,8 @@
                 <ul class="nav-links">
                     <li><a asp-controller="Students" asp-action="StudentHome" class="active">Home</a></li>
                     <li><a asp-controller="Students" asp-action="StudentCourses">Courses</a></li>
-                    <li><a >Resources</a></li>
+                    <li><a asp-controller="Students" asp-action="StudentDashboard">Dashboard</a></li>
+
                     <li><a href="#">About Us</a></li>
                     <li><a asp-controller="Students" asp-action="MyCart">My Cart</a></li>
                     
@@ -789,60 +790,7 @@
             </div>
         </section>
 
-        <!-- Featured Course Section -->
-        <section>
-            <h2 class="section-title">Featured Course</h2>
-
-            <!-- Single Course Card with Detailed Design -->
-            <div class="course-card">
-                <div class="course-image">
-                    <img src="/api/placeholder/800/500" alt="Web Development Masterclass">
-                    <span class="course-badge">Bestseller</span>
-                </div>
-                <div class="course-details">
-                    <div class="course-instructor">
-                        <img src="/api/placeholder/100/100" alt="Instructor" class="instructor-avatar">
-                        <div class="instructor-info">
-                            <div class="instructor-name">Dr. Sarah Johnson</div>
-                            <div class="instructor-title">Senior Web Developer & Educator</div>
-                        </div>
-                    </div>
-                    <h3 class="course-title">Complete Web Development Bootcamp: HTML, CSS, JavaScript & More</h3>
-                    <p class="course-description">
-                        Master the fundamentals of web development in this comprehensive course. Starting with HTML5 and CSS3,
-                        you'll progress to responsive design techniques, advanced JavaScript concepts, and modern frameworks.
-                        By the end of this bootcamp, you'll be able to build professional, responsive websites from scratch and
-                        deploy them online.
-                    </p>
-                    <div class="course-stats">
-                        <div class="stat">
-                            <span class="stat-value">4.9</span>
-                            <span class="stat-label">Rating</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-value">24,532</span>
-                            <span class="stat-label">Students</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-value">42</span>
-                            <span class="stat-label">Hours</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-value">156</span>
-                            <span class="stat-label">Lessons</span>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-value">Beginner</span>
-                            <span class="stat-label">Level</span>
-                        </div>
-                    </div>
-                    <div class="course-footer">
-                        <div class="price">$89.99</div>
-                        <button class="enroll-btn">Enroll Now</button>
-                    </div>
-                </div>
-            </div>
-        </section>
+        
     </div>
 
     <!-- Footer -->

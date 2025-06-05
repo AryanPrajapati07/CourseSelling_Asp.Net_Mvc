@@ -7,6 +7,8 @@ namespace Demo.Services
 {
     public class ApplicationDbContext : DbContext
     {
+        internal readonly object VideoProgress;
+
         public ApplicationDbContext()
         {
         }

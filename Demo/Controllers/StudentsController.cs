@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using System.Net.Mail;
 using System.Text.Json;
+using Demo.Migrations;
 using Demo.Models;
 using Demo.Services;
 using DinkToPdf.Contracts;
@@ -294,7 +295,7 @@ namespace Demo.Controllers
 
             var fromAddress = new MailAddress("aryanprajapati5523@gmail.com", "EduMaster");
             var toAddress = new MailAddress(email);
-            const string fromPassword = "qjqpozuuabxjbqvk"; // Use App Password, not your Gmail password
+            const string fromPassword = "qjqpozuuabxjbqvk";
             const string subject = "Your OTP Code";
             string body = $"Your OTP is: {otp}";
 
@@ -395,7 +396,7 @@ namespace Demo.Controllers
             else
             {
                 ModelState.AddModelError("", "Invalid OTP. Please try again.");
-                TempData["StudentOtp"] = storedOtp; // Keep OTP for retry
+                TempData["StudentOtp"] = storedOtp;
                 TempData["StudentEmail"] = email;
                 return View();
             }
@@ -423,19 +424,16 @@ namespace Demo.Controllers
 
             var student = context.Students.FirstOrDefault(s => s.Email == User.Identity.Name);
 
-
             ViewBag.StudentName = student?.Name;
             ViewBag.StudentEmail = student?.Email;
             ViewBag.StudentCountry = student?.Country;
             ViewBag.StudentState = student?.State;
 
-
-
             return View(course);
         }
 
 
-        // Updated Profile method to fix CS0021 error
+        // Profile Page
         public IActionResult Profile()
         {
             var email = HttpContext.Session.GetString("StudentEmail");
@@ -471,6 +469,7 @@ namespace Demo.Controllers
                                        s.Name,
                                        s.Email
                                    }
+
                                }).ToList();
 
             ViewBag.Enrollments = enrollments;
@@ -478,36 +477,9 @@ namespace Demo.Controllers
             return View(student);
         }
 
-        //private void SendConfirmationEmail(string toEmail, string subject, string body)
-        //{
-        //    var fromEmail = "aryanprajapati5523@gmail.com";
-        //    var password = "qjqpozuuabxjbqvk";
 
-        //    var message = new MailMessage();
-        //    message.From = new MailAddress(fromEmail, "EduMaster");
-        //    message.To.Add(toEmail);
-        //    message.Subject = subject;
-        //    message.Body = body;
-        //    message.IsBodyHtml = true;
 
-        //    try
-        //    {
-        //        using (var smtp = new SmtpClient("smtp.gmail.com", 587))
-        //        {
-        //            smtp.Credentials = new NetworkCredential(fromEmail, password);
-        //            smtp.EnableSsl = true;
-        //            smtp.Send(message);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine("Email Error: " + ex.Message);
-        //        // Or log to file, or show in view temporarily
-        //    }
-
-        //}
-
-        //Generate Invoice 
+        //RazorPay Payment Success 
         public async Task<IActionResult> PaymentSuccess(string paymentId, decimal amount, int courseId)
         {
             var email = HttpContext.Session.GetString("StudentEmail");
@@ -520,44 +492,9 @@ namespace Demo.Controllers
             if (course == null || student == null)
                 return NotFound();
 
-    //        // Compose email content
-    //        string subject = "Course Enrollment Confirmation";
-    //        string body = $@"
-    //    Dear {student.Name},<br/><br/>
-
-    //    Thank you for enrolling in <strong>{course.CourseTitle}</strong>.<br/>
-    //    Here are your enrollment details:<br/><br/>
-
-    //    <strong>Payment ID:</strong> {paymentId}<br/>
-    //    <strong>Amount Paid:</strong> ₹{amount}<br/>
-    //    <strong>Course Duration:</strong> {course.Hours} Hours<br/>
-    //    <strong>Instructor:</strong> {course.Instructor}<br/>
-    //    <strong>Enrollment Date:</strong> {DateTime.Now:MMMM dd, yyyy}<br/><br/>
-
-    //    If you have any questions, feel free to contact us at support@yourplatform.com.<br/><br/>
-
-    //    Best regards,<br/>
-    //    EduMaster Team
-    //";
-
-    //        // Send email
-    //        SendConfirmationEmail(student.Email, subject, body);
-
-    //        ViewBag.EmailStatus = "Confirmation email sent to " + student.Email;
             return RedirectToAction("Profile");
 
-            
         }
-        
-
-
-
-
-        //send mail
-
-
-
-
 
         [HttpPost]
         public IActionResult Enroll([FromBody] EnrollmentDto dto)
@@ -580,9 +517,6 @@ namespace Demo.Controllers
                     PaymentDate = dto.PaymentDate
                 };
 
-
-
-
                 context.Enrollments.Add(enrollment);
                 context.SaveChanges(); //  This line causes the error
 
@@ -595,9 +529,6 @@ namespace Demo.Controllers
                 return Json(new { success = false, message = "DB Error: " + errorMessage });
             }
         }
-
-
-
 
         public class EnrollmentDto
         {
@@ -668,7 +599,7 @@ namespace Demo.Controllers
 
 
             return File(pdfBytes, "application/pdf", fileName);
- 
+
         }
 
         public IActionResult MyCart()
@@ -710,6 +641,72 @@ namespace Demo.Controllers
             return RedirectToAction("MyCart");
         }
 
+        //Dashboard and Progress
+        public IActionResult StudentDashboard()
+        {
+            var email = HttpContext.Session.GetString("StudentEmail");
+            if (string.IsNullOrEmpty(email))
+                return RedirectToAction("StudentLogin");
+
+            var dashboardData = (from e in context.Enrollments
+                                 join c in context.Courses on e.CourseId equals c.Id
+                                 join vp in context.VideoProgress on new { e.CourseId, StudentEmail = email }
+                                     equals new { vp.CourseId, vp.StudentEmail } into vpJoined
+                                 from vp in vpJoined.DefaultIfEmpty()
+                                 where e.StudentEmail == email
+                                 select new
+                                 {
+                                     CourseTitle = c.CourseTitle,
+                                     TotalVideoDuration = c.VideoDurationInSeconds,
+                                     WatchedSeconds = vp != null ? vp.WatchedSeconds : 0
+                                 }).ToList();
+
+            var progressData = dashboardData.Select(d => new
+            {
+                d.CourseTitle,
+                ProgressPercentage = d.TotalVideoDuration > 0 ?
+                                     Math.Round((d.WatchedSeconds / d.TotalVideoDuration) * 100, 1) : 0
+            }).ToList();
+
+            ViewBag.ProgressData = progressData;
+            return View();
+        }
+
+
+        [HttpPost]
+        public IActionResult UpdateWatchTime([FromBody] WatchTimeModel data)
+        {
+            var email = HttpContext.Session.GetString("StudentEmail");
+            if (string.IsNullOrEmpty(email)) return Unauthorized();
+
+            var progress = context.VideoProgress.FirstOrDefault(v => v.StudentEmail == email && v.CourseId == data.CourseId);
+
+            if (progress != null)
+            {
+                progress.WatchedSeconds += data.SecondsWatched;
+                progress.LastUpdated = DateTime.Now;
+            }
+            else
+            {
+                progress = new VideoProgress
+                {
+                    StudentEmail = email,
+                    CourseId = data.CourseId,
+                    WatchedSeconds = data.SecondsWatched,
+                    LastUpdated = DateTime.Now
+                };
+                context.VideoProgress.Add(progress);
+            }
+
+            context.SaveChanges();
+            return Ok();
+        }
+
+        public class WatchTimeModel
+        {
+            public int CourseId { get; set; }
+            public double SecondsWatched { get; set; }
+        }
 
 
 

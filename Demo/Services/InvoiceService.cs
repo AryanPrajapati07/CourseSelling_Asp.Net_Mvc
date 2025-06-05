@@ -4,6 +4,8 @@ using System.Net;
 using System.Reflection.Metadata;
 using DinkToPdf;
 using DinkToPdf.Contracts;
+using System.Drawing.Printing;
+using Intuit.Ipp.Data;
 
 public class InvoiceService
 {
@@ -52,64 +54,95 @@ public class InvoiceService
     <meta charset='UTF-8'>
     <style>
         body {{
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 40px;
-            color: #333;
+            background-color: #f8f9fa;
+            color: #212529;
+        }}
+        
+        .invoice-container {{
+            background-color: #fff;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 700px;
+            margin: auto;
         }}
         h2 {{
             text-align: center;
-            color: #4CAF50;
+            color: #28a745;
+            margin-bottom: 30px;
+        }}
+        h1{{
+            text-align:center;
+            color:#4361EE;
         }}
         .section {{
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+        }}
+        .section-title {{
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
+            padding-bottom: 5px;
+            color: #343a40;
+        }}
+        .field {{
+            margin: 6px 0;
         }}
         .label {{
-            font-weight: bold;
+            font-weight: 600;
+            color: #495057;
         }}
-        hr {{
-            margin: 20px 0;
+        .value {{
+            margin-left: 5px;
+        }}
+        .footer {{
+            text-align: right;
+            margin-top: 30px;
+            font-style: italic;
+            color: #6c757d;
         }}
     </style>
 </head>
 <body>
-    <h2>Course Enrollment Invoice</h2>
+        <h1>EduMaster</h1>
 
-    <div class='section'>
-        <p><span class='label'>Student Name:</span> {studentName}</p>
-        <p><span class='label'>Email:</span> {email}</p>
+    <div class='invoice-container'>
+
+        <h2>Course Enrollment Invoice</h2>
+
+        <div class='section'>
+            <div class='section-title'>Student Details</div>
+            <div class='field'><span class='label'>Name:</span><span class='value'>{studentName}</span></div>
+            <div class='field'><span class='label'>Email:</span><span class='value'>{email}</span></div>
+        </div>
+
+        <div class='section'>
+            <div class='section-title'>Course Details</div>
+            <div class='field'><span class='label'>Course Name:</span><span class='value'>{courseName}</span></div>
+            <div class='field'><span class='label'>Duration:</span><span class='value'>{duration} Hours</span></div>
+            <div class='field'><span class='label'>Instructor:</span><span class='value'>{instructor}</span></div>
+        </div>
+
+        <div class='section'>
+            <div class='section-title'>Payment Information</div>
+            <div class='field'><span class='label'>Razorpay Payment ID:</span><span class='value'>{paymentId}</span></div>
+            <div class='field'><span class='label'>Amount Paid:</span><span class='value'>{amount:C}</span></div>
+        </div>
+
+        <div class='footer'>
+            Issued on: {DateTime.Now:yyyy-MM-dd}
+        </div>
     </div>
-
-<hr/>
-
-    <div class='section'>
-        <p><span class='label'>Course Name:</span> {courseName}</p>
-        <p><span class='label'>Duration:</span> {duration} Hours</p>
-        <p><span class='label'>Instructor:</span> {instructor}</p>
-    </div>
-
-
-    <hr/>
-
-    <div class='section'>
-        <p><span class='label'>Razorpay Payment ID:</span> {paymentId}</p>
-        <p><span class='label'>Amount Paid:</span> {amount:C}</p>
-    </div>
-
-    
-
-    
-
-
-   
-
-    <p style='text-align:right;'><em>Issued on: {DateTime.Now:yyyy-MM-dd}</em></p>
 </body>
 </html>";
+
 
         var doc = new HtmlToPdfDocument()
         {
             GlobalSettings = {
-            PaperSize = PaperKind.A4,
+            PaperSize = DinkToPdf.PaperKind.A4,
             Orientation = Orientation.Portrait,
             Margins = new MarginSettings { Top = 10, Bottom = 10 }
         },
