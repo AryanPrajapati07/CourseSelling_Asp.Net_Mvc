@@ -6,6 +6,7 @@ namespace Demo.Models
 {
     public class Course
     {
+        internal readonly object VideoDurationInSeconds;
 
         public int Id { get; set; }
 

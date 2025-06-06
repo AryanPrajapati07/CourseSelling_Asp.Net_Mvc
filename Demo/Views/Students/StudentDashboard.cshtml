@@ -1,6 +1,5 @@
 ﻿@model Demo.Models.Course
 
-
 @{
 
 
@@ -573,6 +572,9 @@
 		</div>
 	</header>
 
+	<form asp-controller="Students" asp-action="StudentDashboard" method="post">
+		@Html.AntiForgeryToken()
+
 	<!-- Hero Section -->
 	<div class="container">
 
@@ -583,35 +585,12 @@
 		<section>
 			<h2 class="section-title">Student Dashboard</h2>
 			<div class="courses-row">
-				 @if (!string.IsNullOrEmpty(Model.ImagePath) || !string.IsNullOrEmpty(Model.VideoPath)) 
-             { 
-                 <div class="media-gallery">
-                     @if (!string.IsNullOrEmpty(Model.ImagePath)) 
-                     { 
-                         <div class="media-item"> 
-                            <img src="@Url.Content($"~{Model.ImagePath}")" alt="@Model.CourseTitle" /> 
-                             <div class="media-overlay">Course Preview</div> 
-                         </div> 
-                     } 
-
-                     @if (!string.IsNullOrEmpty(Model.VideoPath)) 
-                     { 
-                         <div class="media-item">
-								<video id ="courseVideo" controls>
-									<source src="@Url.Content($"~{Model.VideoPath}")" type="video/mp4" /> 
-                                 Your browser does not support the video tag. 
-                             </video> 
-                             <div class="media-overlay"> 
-                                 <i class="fas fa-play"></i> Preview Video 
-                            </div> 
-                         </div> 
-                     } 
-                </div> 
-             } 
+				
 			</div>
 		</section>
 
 	</div>
+	</form>
 
 	<!-- Footer -->
 	<footer>
@@ -664,28 +643,6 @@
 </body>
 </html>
 
-<script>
-	const video = document.getElementById('courseVideo');
-	let watchedTime = 0;
 
-	setInterval(() => {
-		if (!video.paused) {
-			watchedTime += 1;
-
-			fetch('/Student/UpdateWatchTime', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify({
-					courseId: @Model.Id,
-					secondsWatched: watchedTime
-				})
-			});
-
-			watchedTime = 0;
-		}
-	}, 5000);
-</script>
 
 

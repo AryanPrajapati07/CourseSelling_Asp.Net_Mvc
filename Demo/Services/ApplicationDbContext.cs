@@ -7,23 +7,21 @@ namespace Demo.Services
 {
     public class ApplicationDbContext : DbContext
     {
-        internal readonly object VideoProgress;
+     
 
-        public ApplicationDbContext()
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+     : base(options)
         {
         }
 
-        public ApplicationDbContext(DbContextOptions options) : base(options)
-        {
-
-        }
+       
         public DbSet<Student> Students { get; set; }
         public DbSet<Course> Courses { get; set; }
 
         public DbSet<Instructor> Instructors { get; set; }
 
-        public DbSet<Enrollment> Enrollments { get; set; } // Ensure Enrollment class is public
-                                                           // 
+        public DbSet<Enrollment> Enrollments { get; set; } 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -40,17 +38,6 @@ namespace Demo.Services
       .Property(e => e.Amount)
       .HasPrecision(18, 2);
         }
-
-
-
-
-
-        // Ensure the Enrollment class is public  
-       
-
-
-
-
 
 
         public List<Student> GetStudentsData(String sortBy = null, String gender = null, DateTime? dobFrom = null, DateTime? dobTo = null)

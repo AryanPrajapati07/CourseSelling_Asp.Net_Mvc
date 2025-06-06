@@ -1,15 +1,20 @@
 ﻿@model List<Enrollment>
+
 @{
 
-	var search = Context.Request.Query.ContainsKey("searchCourse")
-		? Context.Request.Query["searchCourse"].ToString()
-		: "";
+	var payments = ViewBag.Payments as IEnumerable<dynamic>;
+	var totalRevenue = ViewBag.TotalRevenue;
+	var totalEnrolledCourses = ViewBag.TotalEnrolledCourses;
+
+	
+
 
 }
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Admin Panel - Add Students</title>
@@ -491,10 +496,10 @@
 				<div class="search-section">
 					
 
-					<div class="input-group">
-						<input type="text" name="searchCourse" class="form-control" placeholder="Search by Email..." value="@search" />
-						<button type="submit" class="btn btn-primary">🔍 Search</button>
-					</div>
+					@* <div class="input-group"> *@
+					@* 	<input type="text" name="searchCourse" class="form-control" placeholder="Search by Email..." value="" /> *@
+					@* 	<button type="submit" class="btn btn-primary">🔍 Search</button> *@
+					@* </div> *@
 				<form asp-controller="Courses" asp-action="DownloadCsv" method="post" id="csvDownloadForm">
 					@Html.AntiForgeryToken()
 
@@ -503,7 +508,7 @@
 							id="downloadBtn"
 							aria-describedby="downloadHelp">
 						<i class="fas fa-download" aria-hidden="true"></i>
-						<span class="btn-text">Download CSV Data</span>
+						<span class="btn-text">Download CSV </span>
 						<div class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></div>
 					</button>
 				</form>
@@ -511,8 +516,15 @@
 					
 					
 				</div>
-				<form method="get" asp-controller="Courses" asp-action="PaymentList">
+			<form id="anti-forgery-form" method="get" asp-controller="Courses" asp-action="PaymentList">
+				@Html.AntiForgeryToken()
+
 				<div class="table-container">
+
+					<h2 class="btn-text">Total Enrolled : @totalEnrolledCourses </h2>
+
+					<h2 class="btn-text">Total Revenue : ₹@totalRevenue </h2>
+
 					<table class="table">
 						<thead>
 							<tr>
@@ -522,48 +534,60 @@
 								<th>Payment ID</th>
 								<th>Amount</th>
 								<th>Payment Date</th>
+								<th>Action</th>
+
 								@* <th>Invoice</th> *@
 								
 								
 							</tr>
 						</thead>
-						 <tbody> 
-						 	@if (Model != null && Model.Any()) 
-						 	{ 
-						 		@foreach (var courses in Model) 
-						 		{ 
-						 			<tr> 
-						 				<td>@($"En250{courses.Id}")</td> 
-						 				<td><strong>@courses.StudentEmail</strong></td>
-										<td>@($"CS250{courses.CourseId}")</td>
-										<td>@courses.PaymentId</td>
-										<td><span class="price">₹@courses.Amount</span></td>
-										<td>@courses.PaymentDate</td>
-										@* <td> *@
+						<tbody>
+							@if (payments != null && payments.Any())
+							{
+								foreach (var p in payments)
+								{
+									<tr>
+										<td>@($"En250{p.EnrollmentId}")</td>
+										<td><strong>@p.StudentEmail</strong></td>
+										<td>@($"CS250{p.CourseId}")</td>
+										<td>@p.PaymentId</td>
+										<td><span class="price">₹@p.Amount</span></td>
+										<td>@p.PaymentDate.ToString("dd MMM yyyy")</td>
+										<td>
+											<button type="button"
+													class="btn btn-danger cancel-enrollment-btn"
+													data-enrollment-id="@p.EnrollmentId"
+													data-email="@p.StudentEmail">
+												Cancel Enrollment
+											</button>
+										</td>
 
-										@* 	<a href="@Url.Action("DownloadInvoice", "Students", new { paymentId = courses.PaymentId })"> *@
-										@* 		View Invoice *@
-										@* 	</a> *@
+									</tr>
+								}
+							}
+							else
+							{
+								<tr>
+									<td colspan="8">
+										<div class="empty-state">
+											<div class="empty-state-icon">📚</div>
+											<h4>No Payments Found</h4>
+											<p>No payments match your criteria.</p>
+										</div>
+									</td>
+								</tr>
+							}
+						</tbody>
+					
 
-										@* </td> *@
-									</tr> 
-						 		} 
-						 	} 
-						 	else 
-						 	{ 
-						 		<tr> 
-						 			<td colspan="8"> 
-						 				<div class="empty-state"> 
-						 					<div class="empty-state-icon">📚</div> 
-						 					<h4>No Courses Found</h4> 
-						 					<p>No courses match your search criteria. Try adjusting your search or add a new course.</p> 
-						 				</div> 
-						 			</td> 
-						 		</tr> 
-						 	} 
-						 </tbody> 
 					</table>
+
+					
+
+
 				</div>
+
+
 			</form>
 
 			</div>
@@ -573,7 +597,49 @@
 </body>
 </html>
 
+@section Scripts {
+	<script>
+		$(document).ready(function () {
+			$('.cancel-enrollment-btn').click(function () {
+				var button = $(this);
+				var enrollmentId = button.data('enrollment-id');
+				var email = button.data('email');
+				var token = $('#anti-forgery-form input[name="__RequestVerificationToken"]').val();
+
+				if (confirm('Are you sure you want to cancel this enrollment?')) {
+					button.prop('disabled', true).text('Processing...');
+
+					$.ajax({
+						url: '/Courses/CancelEnrollment',
+						type: 'POST',
+						headers: {
+							'RequestVerificationToken': token
+						},
+						data: {
+							id: enrollmentId,
+							email: email
+						},
+						success: function (response) {
+							alert('Enrollment cancelled and refund is being processed.');
+							location.reload();
+						},
+						error: function () {
+							alert('Error occurred while cancelling.');
+							button.prop('disabled', false).text('Cancel Enrollment');
+						}
+					});
+				}
+			});
+		});
+	</script>
+}
+
+
+
 <script>
+
+	var csrfToken = $('input[name="__RequestVerificationToken"]').val();
+
 	document.getElementById('csvDownloadForm').addEventListener('submit', function(e) {
 		const btn = document.getElementById('downloadBtn');
 		const btnText = btn.querySelector('.btn-text');
@@ -591,4 +657,7 @@
 			spinner.classList.add('d-none');
 		}, 1000);
 	});
-</script>
+	</script>
+
+
+

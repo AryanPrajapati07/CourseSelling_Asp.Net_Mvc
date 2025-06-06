@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using MathNet.Numerics.Distributions;
 using OfficeOpenXml;
 using System.Text;
+using System.Net.Mail;
+using Microsoft.AspNetCore.Antiforgery;
+using System.Net;
 
 namespace Demo.Controllers
 {
@@ -14,6 +17,7 @@ namespace Demo.Controllers
         public CoursesController(ApplicationDbContext context)
         {
             this.context = context;
+           
 
         }
         public IActionResult Index()
@@ -85,19 +89,6 @@ namespace Demo.Controllers
                 return RedirectToAction("AddCourse", "Students");
             }
 
-
-            //// Repopulate instructors for redisplay
-            //ViewBag.Instructors = context.Instructors
-            //    .Select(i => new
-            //    {
-            //        Id = i.Id,
-            //        Name = i.FirstName + " " + i.LastName
-            //    })
-            //    .ToList();
-
-            //ViewBag.Instructors = context.Instructors.ToList();
-
-
             return View(course);
 
 
@@ -122,6 +113,8 @@ namespace Demo.Controllers
             var instructors = GetInstructors();
             ViewBag.Instructors = instructors;
 
+
+
             return View(courses);
             
         }
@@ -139,9 +132,29 @@ namespace Demo.Controllers
 
         public IActionResult PaymentList()
         {
-            List<Enrollment> enrollments = context.Enrollments.ToList();
-            return View(enrollments); 
-            //return View();
+            
+            var payments = (from e in context.Enrollments
+                            join c in context.Courses on e.CourseId equals c.Id
+                            join s in context.Students on e.StudentEmail equals s.Email
+                            select new
+                            {
+                                EnrollmentId = e.Id,
+                                StudentEmail = s.Email,
+                                CourseId = c.Id,
+                                PaymentId = e.PaymentId,
+                                Amount = e.Amount,
+                                PaymentDate = e.PaymentDate
+                            }).ToList();
+
+            ViewBag.TotalRevenue = payments.Sum(p => p.Amount);
+            ViewBag.TotalEnrolledCourses = payments.Count();
+
+
+
+            ViewBag.Payments = payments;
+
+            return View();
+
         }
 
         //download enrollment csv
@@ -165,6 +178,57 @@ namespace Demo.Controllers
             return File(bytes, "text/csv", fileName);
         }
 
+        //cancel enrollment 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CancelEnrollment(int id, string email)
+        {
+            var enrollment = context.Enrollments.FirstOrDefault(e => e.Id == id && e.StudentEmail == email);
+            if (enrollment == null)
+            {
+                return NotFound();
+            }
+
+            var courseId = enrollment.CourseId;
+
+            context.Enrollments.Remove(enrollment);
+            context.SaveChanges();
+
+            SendCancellationEmail(email, courseId);
+
+            return Ok(); //Don't return View() in AJAX handler
+        }
+
+
+        private void SendCancellationEmail(string studentEmail, int courseId)
+        {
+            var fromAddress = new MailAddress("aryanprajapati5523@gmail.com", "EduMaster");
+            var toAddress = new MailAddress(studentEmail);
+            const string fromPassword = "qjqpozuuabxjbqvk"; // Use App Password, not your Gmail password
+
+            var course = context.Courses.FirstOrDefault(c => c.Id == courseId);
+            var subject = "Enrollment Cancelled";
+            var body = $"Your enrollment in course '{course?.CourseTitle}' has been cancelled. Refund is being processed.";
+
+            var smtp = new SmtpClient
+            {
+                Host = "smtp.gmail.com",
+                Port = 587,
+                EnableSsl = true,
+                DeliveryMethod = SmtpDeliveryMethod.Network,
+                UseDefaultCredentials = false,
+                Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
+            };
+
+            using (var message = new MailMessage(fromAddress, toAddress)
+            {
+                Subject = subject,
+                Body = body
+            })
+            {
+                smtp.Send(message);
+            }
+        }
 
 
 

@@ -605,7 +605,6 @@ namespace Demo.Controllers
         public IActionResult MyCart()
         {
 
-
             var cart = HttpContext.Session.GetObject<List<Course>>("Cart") ?? new List<Course>();
             return View(cart);
         }
@@ -642,70 +641,11 @@ namespace Demo.Controllers
         }
 
         //Dashboard and Progress
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult StudentDashboard()
         {
-            var email = HttpContext.Session.GetString("StudentEmail");
-            if (string.IsNullOrEmpty(email))
-                return RedirectToAction("StudentLogin");
-
-            var dashboardData = (from e in context.Enrollments
-                                 join c in context.Courses on e.CourseId equals c.Id
-                                 join vp in context.VideoProgress on new { e.CourseId, StudentEmail = email }
-                                     equals new { vp.CourseId, vp.StudentEmail } into vpJoined
-                                 from vp in vpJoined.DefaultIfEmpty()
-                                 where e.StudentEmail == email
-                                 select new
-                                 {
-                                     CourseTitle = c.CourseTitle,
-                                     TotalVideoDuration = c.VideoDurationInSeconds,
-                                     WatchedSeconds = vp != null ? vp.WatchedSeconds : 0
-                                 }).ToList();
-
-            var progressData = dashboardData.Select(d => new
-            {
-                d.CourseTitle,
-                ProgressPercentage = d.TotalVideoDuration > 0 ?
-                                     Math.Round((d.WatchedSeconds / d.TotalVideoDuration) * 100, 1) : 0
-            }).ToList();
-
-            ViewBag.ProgressData = progressData;
             return View();
-        }
-
-
-        [HttpPost]
-        public IActionResult UpdateWatchTime([FromBody] WatchTimeModel data)
-        {
-            var email = HttpContext.Session.GetString("StudentEmail");
-            if (string.IsNullOrEmpty(email)) return Unauthorized();
-
-            var progress = context.VideoProgress.FirstOrDefault(v => v.StudentEmail == email && v.CourseId == data.CourseId);
-
-            if (progress != null)
-            {
-                progress.WatchedSeconds += data.SecondsWatched;
-                progress.LastUpdated = DateTime.Now;
-            }
-            else
-            {
-                progress = new VideoProgress
-                {
-                    StudentEmail = email,
-                    CourseId = data.CourseId,
-                    WatchedSeconds = data.SecondsWatched,
-                    LastUpdated = DateTime.Now
-                };
-                context.VideoProgress.Add(progress);
-            }
-
-            context.SaveChanges();
-            return Ok();
-        }
-
-        public class WatchTimeModel
-        {
-            public int CourseId { get; set; }
-            public double SecondsWatched { get; set; }
         }
 
 
