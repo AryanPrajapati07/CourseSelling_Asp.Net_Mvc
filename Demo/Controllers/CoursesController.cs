@@ -8,6 +8,8 @@ using System.Text;
 using System.Net.Mail;
 using Microsoft.AspNetCore.Antiforgery;
 using System.Net;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using FluentAssertions.Extensions;
 
 namespace Demo.Controllers
 {
@@ -186,29 +188,37 @@ namespace Demo.Controllers
             var enrollment = context.Enrollments.FirstOrDefault(e => e.Id == id && e.StudentEmail == email);
             if (enrollment == null)
             {
-                return NotFound();
+                return NotFound("Enrollment not found.");
             }
 
             var courseId = enrollment.CourseId;
+            var paymentDate = enrollment.PaymentDate;
+
+            // Check if payment is older than 7 days
+            var daysSincePayment = (DateTime.Now - paymentDate).TotalDays;
+            if (daysSincePayment > 7)
+            {
+                return BadRequest("Enrollment cannot be cancelled. Refund period (7 days) has expired.");
+            }
 
             context.Enrollments.Remove(enrollment);
             context.SaveChanges();
 
             SendCancellationEmail(email, courseId);
-
-            return Ok(); //Don't return View() in AJAX handler
+            return Ok("Enrollment cancelled successfully.");
         }
+
 
 
         private void SendCancellationEmail(string studentEmail, int courseId)
         {
             var fromAddress = new MailAddress("aryanprajapati5523@gmail.com", "EduMaster");
             var toAddress = new MailAddress(studentEmail);
-            const string fromPassword = "qjqpozuuabxjbqvk"; // Use App Password, not your Gmail password
+            const string fromPassword = "qjqpozuuabxjbqvk"; 
 
             var course = context.Courses.FirstOrDefault(c => c.Id == courseId);
             var subject = "Enrollment Cancelled";
-            var body = $"Your enrollment in course '{course?.CourseTitle}' has been cancelled. Refund is being processed.";
+            var body = $"Your enrollment in course '{course?.CourseTitle}' has been cancelled. Refund will be process in 5-7 business days.";
 
             var smtp = new SmtpClient
             {

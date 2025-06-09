@@ -12,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMemoryCache();
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddControllers();
 
 
 
@@ -30,6 +31,8 @@ builder.Services.AddScoped<InvoiceService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 builder.Services.AddSession();
+
+builder.Services.AddControllers().AddNewtonsoftJson();
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 {
@@ -51,12 +54,15 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+
 app.UseSession(); // Moved this line after app is declared
 
 app.UseRouting();
 
 
 app.UseAuthorization();
+app.MapControllers();
+
 
 
 

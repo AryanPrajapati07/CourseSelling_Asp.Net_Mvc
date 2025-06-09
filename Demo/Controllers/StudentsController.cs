@@ -12,9 +12,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 
 
-
-
-
 namespace Demo.Controllers
 {
     public class StudentsController : Controller
