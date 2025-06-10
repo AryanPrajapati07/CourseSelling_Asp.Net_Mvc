@@ -14,7 +14,8 @@ namespace Demo.Services
         {
         }
 
-       
+        public DbSet<Review> Reviews { get; set; }
+
         public DbSet<Student> Students { get; set; }
         public DbSet<Course> Courses { get; set; }
 

@@ -1,0 +1,26 @@
+﻿<h2>All Course Reviews</h2>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Course Id</th>
+            <th>Course Title</th>
+            <th>Student Email</th>
+            <th>Rating</th>
+            <th>Comment</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var review in Model)
+        {
+            <tr>
+                <td>@review.Course.Id</td>
+                <td>@review.Course.CourseTitle</td>
+                <td>@review.StudentEmail</td>
+                <td>@review.Rating</td>
+                <td>@review.Comment</td>
+                <td>@review.SubmittedAt.ToShortDateString()</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -240,7 +240,13 @@ namespace Demo.Controllers
             }
         }
 
+        //Review Display
 
+        public IActionResult Reviews()
+        {
+            var reviews = context.Reviews.Include(r => r.Course).ToList();
+            return View(reviews);
+        }
 
     }
 

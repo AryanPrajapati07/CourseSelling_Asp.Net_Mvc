@@ -817,6 +817,8 @@
 								<th>Course Title</th>
 								<th>Instructor</th>
 								<th>Download Invoice</th>
+								<th>Review</th>
+
 							</tr>
 						</thead>
 						<tbody>
@@ -840,11 +842,16 @@
 									<td>
 										@item.Course.Instructor
 									</td>
-									
+
 									<td>
-									<a asp-controller="Students" asp-action="DownloadEnrollmentPdf" asp-route-paymentId="@item.Enrollment.PaymentId" class="action-btn primary">
+										<a asp-controller="Students" asp-action="DownloadEnrollmentPdf" asp-route-paymentId="@item.Enrollment.PaymentId" class="action-btn primary">
 											Download Invoice
-									</a>
+										</a>
+									</td>
+									<td>
+										<a asp-controller="Students" asp-action="SubmitReview" asp-route-id="@item.Enrollment.CourseId" class="action-btn primary">
+											Review
+										</a>
 									</td>
 								</tr>
 							}
@@ -861,6 +868,8 @@
 				</div>
 			}
 		</div>
+
+		
 
 
 

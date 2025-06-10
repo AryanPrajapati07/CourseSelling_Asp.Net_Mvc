@@ -1,0 +1,28 @@
+﻿@model Demo.Models.Review
+
+
+<form asp-controller="Students" asp-action="SubmitReview" method="post">
+    @Html.AntiForgeryToken()
+
+    <div class="form-group">
+        @* <label>Course ID</label> *@
+        <input type="hidden" asp-for="CourseId" class="form-control" value="@Model.CourseId" readonly />
+    </div>
+
+    <div class="form-group">
+        <label>Email</label>
+        <input asp-for="StudentEmail" class="form-control" readonly />
+    </div>
+
+    <div class="form-group">
+        <label>Comment</label>
+        <textarea asp-for="Comment" class="form-control" required></textarea>
+    </div>
+
+    <div class="form-group">
+        <label>Rating Out of 5</label>
+        <input asp-for="Rating" type="number" class="form-control" min="1" max="5" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit Review</button>
+</form>

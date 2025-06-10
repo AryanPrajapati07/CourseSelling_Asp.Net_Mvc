@@ -356,6 +356,7 @@ namespace Demo.Controllers
             string otp = GenerateOtp();
             TempData["StudentOtp"] = otp;
             TempData["StudentEmail"] = Email;
+            HttpContext.Session.SetString("StudentEmail", student.Email);
 
             // Send OTP via email (replace with your email sending logic)
             SendOtpEmail(Email, otp);
@@ -417,7 +418,9 @@ namespace Demo.Controllers
 
         public IActionResult CourseDetails(int id)
         {
+            
             var course = context.Courses.FirstOrDefault(c => c.Id == id);
+           
 
             var student = context.Students.FirstOrDefault(s => s.Email == User.Identity.Name);
 
@@ -425,6 +428,8 @@ namespace Demo.Controllers
             ViewBag.StudentEmail = student?.Email;
             ViewBag.StudentCountry = student?.Country;
             ViewBag.StudentState = student?.State;
+
+            ViewBag.StudentEmail = HttpContext.Session.GetString("StudentEmail");
 
             return View(course);
         }
@@ -638,13 +643,63 @@ namespace Demo.Controllers
         }
 
         //Dashboard and Progress
-        [HttpPost]
-        [ValidateAntiForgeryToken]
+        [HttpGet]
         public IActionResult StudentDashboard()
         {
             return View();
         }
 
+
+
+        //Reviews 
+
+        public IActionResult SubmitReview(int courseId)
+        {
+            var studentEmail = HttpContext.Session.GetString("StudentEmail");
+            if (string.IsNullOrEmpty(studentEmail))
+                return RedirectToAction("StudentLogin");
+            var course = context.Courses.FirstOrDefault(c => c.Id == courseId);
+
+            ViewBag.StudentEmail = studentEmail;
+
+            var review = new Review
+            {
+                CourseId = courseId,
+                StudentEmail = studentEmail
+            };
+
+            return View(review);
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult SubmitReview(Review review)
+        {
+            var sessionEmail = HttpContext.Session.GetString("StudentEmail");
+            if (sessionEmail == null || review.StudentEmail != sessionEmail)
+            {
+                return Unauthorized();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    context.Reviews.Add(review);
+                    context.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    TempData["Error"] = "Error saving review: " + ex.Message;
+                    return View(review); // So you can see the error and try again
+                }
+
+                
+            }
+
+            return RedirectToAction("Profile", "Students");
+        }
 
 
     }
