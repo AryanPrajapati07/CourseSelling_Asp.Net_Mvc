@@ -33,9 +33,7 @@ git clone https://github.com/AryanPrajapati07/FirstApplication_Asp.Net_Mvc.git
 * Strongly typed views
 * Code-first or database-first integration (if applicable)
 
-## 📷 Screenshots
 
-(Add screenshots here to show the home page, forms, or any key feature)
 
 ## 📚 Learning Goals
 
